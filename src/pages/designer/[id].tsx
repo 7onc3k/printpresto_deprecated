@@ -17,11 +17,16 @@ const ProductDesigner = () => {
   const [currentView, setCurrentView] = useState('view_1');
 
 
+
+
   useEffect(() => {
     if (canvasRef.current && !canvas) {
-      setCanvas(new fabric.Canvas(canvasRef.current));
+      const newCanvas = new fabric.Canvas(canvasRef.current);
+      setCanvas(newCanvas);
     }
   }, [canvas]);
+
+  // ... (ostatní kód)
 
   useEffect(() => {
     const getProductViews = async () => {
@@ -48,11 +53,12 @@ const ProductDesigner = () => {
     }
   }, [id]);
 
+
   const displayImageOnCanvas = (imageUrl: string, view: string) => {
     if (canvas && imageUrl) {
       setCurrentView(view);
       canvas.clear();
-  
+
       // Přidání obrázku produktu a poslání na pozadí
       fabric.Image.fromURL(imageUrl, (img) => {
         img.selectable = false;
@@ -61,7 +67,7 @@ const ProductDesigner = () => {
         img.center();
         img.setCoords();
       });
-  
+
       // Přidání nahraných obrázků pro aktuální view
       uploadedImages[view].forEach(img => {
         if (!canvas.contains(img)) {
@@ -71,11 +77,11 @@ const ProductDesigner = () => {
           img.setCoords();
         }
       });
-  
+
       canvas.renderAll(); // Znovu vykreslí všechny objekty na plátně
     }
   };
-  
+
   const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
     if (file && canvas) {
@@ -83,10 +89,30 @@ const ProductDesigner = () => {
 
       reader.onload = (fEvent) => {
         fabric.Image.fromURL(fEvent.target!.result as string, (img) => {
+          // Získání rozměrů obrázku produktu
+          let productImage = canvas.backgroundImage;
+          let maxImgWidth, maxImgHeight;
+
+          if (productImage instanceof fabric.Image) {
+            maxImgWidth = productImage.getScaledWidth() * 0.75;
+            maxImgHeight = productImage.getScaledHeight() * 0.75;
+          } else {
+            maxImgWidth = canvas.getWidth() * 0.75;
+            maxImgHeight = canvas.getHeight() * 0.75;
+          }
+
+          // Kontrola a případná úprava velikosti nahraného obrázku
+          if (img.getScaledWidth() > maxImgWidth || img.getScaledHeight() > maxImgHeight) {
+            img.scaleToWidth(Math.min(img.getScaledWidth(), maxImgWidth));
+            img.scaleToHeight(Math.min(img.getScaledHeight(), maxImgHeight));
+          }
+
           img.selectable = true;
           canvas.add(img);
-          img.center();
+          img.bringToFront(); // Přidání nahraného obrázku na vrchol
           img.setCoords();
+          canvas.renderAll();
+
           setUploadedImages(prev => ({
             ...prev,
             [currentView]: [...prev[currentView], img]
@@ -97,6 +123,9 @@ const ProductDesigner = () => {
       reader.readAsDataURL(file);
     }
   };
+
+
+
 
   return (
     <div>

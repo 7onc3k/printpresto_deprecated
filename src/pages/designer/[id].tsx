@@ -124,9 +124,6 @@ const ProductDesigner = () => {
     }
   };
 
-
-
-
   return (
     <div>
       <h1>Designér produktů</h1>

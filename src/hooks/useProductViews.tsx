@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../utils/supabaseClient';
 
-const useProductViews = (id: string | string[] | undefined) => {
+const useProductViews = (productId: string | string[] | undefined) => {
   const [productViews, setProductViews] = useState<{ [key: string]: string }>({ view_1: '', view_2: '', view_3: '', view_4: '' });
 
   useEffect(() => {
     const getProductViews = async () => {
+      if (!productId) return;
+
       const { data, error } = await supabase
         .from('products')
         .select('view_1, view_2, view_3, view_4')
-        .eq('id', id)
+        .eq('id', productId)
         .single();
 
       if (error) {
@@ -24,10 +26,8 @@ const useProductViews = (id: string | string[] | undefined) => {
       }
     };
 
-    if (id) {
-      getProductViews();
-    }
-  }, [id]);
+    getProductViews();
+  }, [productId]);
 
   return productViews;
 };

@@ -6,7 +6,7 @@ interface CanvasComponentProps {
   currentView: string;
   productViews: { [key: string]: string };
   setUploadedImages: React.Dispatch<React.SetStateAction<{ [key: string]: fabric.Image[] }>>;
-  readOnly: boolean; // Added
+  readOnly: boolean;
 }
 
 const CanvasComponent: React.FC<CanvasComponentProps> = ({
@@ -14,7 +14,7 @@ const CanvasComponent: React.FC<CanvasComponentProps> = ({
   currentView,
   productViews,
   setUploadedImages,
-  readOnly, // Added
+  readOnly,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [canvas, setCanvas] = React.useState<fabric.Canvas | null>(null);
@@ -43,21 +43,23 @@ const CanvasComponent: React.FC<CanvasComponentProps> = ({
         imgObj.setCoords();
       });
 
-      uploadedImages[currentView].forEach(img => {
-        if (!canvas.contains(img)) {
-          img.selectable = true;
-          canvas.add(img);
-          img.bringToFront();
-          img.setCoords();
-        }
-      });
+      if (uploadedImages[currentView]) {
+        uploadedImages[currentView].forEach(img => {
+          if (!canvas.contains(img)) {
+            img.selectable = true;
+            canvas.add(img);
+            img.bringToFront();
+            img.setCoords();
+          }
+        });
+      }
 
       canvas.renderAll();
     }
   }, [canvas, productViews, currentView, uploadedImages]);
 
   const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (readOnly) return; // Added
+    if (readOnly) return;
 
     const file = event.target.files && event.target.files[0];
     if (file && canvas) {
@@ -99,7 +101,7 @@ const CanvasComponent: React.FC<CanvasComponentProps> = ({
   };
 
   const removeSelectedImages = () => {
-    if (readOnly) return; // Added
+    if (readOnly) return;
 
     if (!canvas) return;
 
@@ -120,8 +122,8 @@ const CanvasComponent: React.FC<CanvasComponentProps> = ({
   return (
     <div>
       <canvas ref={canvasRef} width={800} height={600} />
-      {!readOnly && <input type="file" onChange={handleUpload} />} {/* Changed */}
-      {!readOnly && <button onClick={removeSelectedImages}>Odstranit označené obrázky</button>} {/* Changed */}
+      {!readOnly && <input type="file" onChange={handleUpload} />}
+      {!readOnly && <button onClick={removeSelectedImages}>Odstranit označené obrázky</button>}
     </div>
   );
 };

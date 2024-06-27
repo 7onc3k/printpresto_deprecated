@@ -32,7 +32,8 @@ const ProductDesigner = () => {
   }, [id, designData]);
 
   const handleSaveDesign = async () => {
-    await saveDesign(user, id, uploadedImages);
+    const designId = await saveDesign(user, id, uploadedImages);
+    return designId;
   };
 
   const handleDesignSelect = async (productId: string, uploadedImagesData: any) => {
@@ -43,10 +44,10 @@ const ProductDesigner = () => {
   };
 
   const addToCart = async () => {
-    await handleSaveDesign(); // Uložit design před přidáním do košíku
+    const designId = await handleSaveDesign(); // Uložit design před přidáním do košíku
 
     const newItem: CartItem = {
-      designId: id,
+      designId, // Použijeme správné ID designu
       productId: id,
       quantity: 1,
       size: '', // Velikost bude vybrána později

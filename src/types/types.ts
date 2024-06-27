@@ -3,6 +3,7 @@ export interface Product {
   name: string;
   description?: string;  // ? značí, že pole je volitelné
   image_url: string;
+  price: number;
 }
 
 interface Params {

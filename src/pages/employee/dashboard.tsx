@@ -10,7 +10,7 @@ const EmployeeDashboard = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
-  const [uploadedImages, setUploadedImages] = useState<{ [key: string]: { [view: string]: fabric.Image[] } }>({});
+  const [uploadedImages, setUploadedImages] = useState<{ [key: string]: fabric.Image[] }>({ view_1: [], view_2: [], view_3: [], view_4: [] });
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
   const [currentView, setCurrentView] = useState('view_1'); // Přidáno pro přepínání pohledů
   const productViews = useProductViews(selectedProductId || undefined);
@@ -50,13 +50,13 @@ const EmployeeDashboard = () => {
     if (item.design_id) {
       console.log('Fetching design with design_id:', item.design_id);
       try {
-        console.log('Before fetching design:', item.design_id); // Added logging
         const { data: design, error: designError } = await supabase
           .from('designs')
           .select('*')
-          .eq('id', item.design_id) // Use design_id instead of product_id
+          .eq('id', item.design_id)
           .single();
-        console.log('After fetching design:', design); // Added logging
+
+        console.log('Fetched design:', design);
 
         if (designError) {
           throw designError;
@@ -71,10 +71,7 @@ const EmployeeDashboard = () => {
 
         const loadedImages = await loadDesign(item.product_id, design);
         if (loadedImages) {
-          setUploadedImages((prev) => ({
-            ...prev,
-            [item.id]: loadedImages,
-          }));
+          setUploadedImages(loadedImages);
         }
       } catch (error) {
         console.error('Error fetching design:', error);
@@ -129,10 +126,10 @@ const EmployeeDashboard = () => {
                 )}
               </div>
               <CanvasComponent
-                uploadedImages={uploadedImages[selectedOrder.id] || {}}
+                uploadedImages={uploadedImages}
                 currentView={currentView}
                 productViews={productViews}
-                setUploadedImages={() => {}}
+                setUploadedImages={setUploadedImages}
                 readOnly={true}
               />
             </div>

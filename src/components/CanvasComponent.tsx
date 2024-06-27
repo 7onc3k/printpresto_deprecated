@@ -46,7 +46,7 @@ const CanvasComponent: React.FC<CanvasComponentProps> = ({
       if (uploadedImages[currentView]) {
         uploadedImages[currentView].forEach(img => {
           if (!canvas.contains(img)) {
-            img.selectable = true;
+            img.selectable = !readOnly; // Set selectable to false if readOnly
             canvas.add(img);
             img.bringToFront();
             img.setCoords();
@@ -56,7 +56,18 @@ const CanvasComponent: React.FC<CanvasComponentProps> = ({
 
       canvas.renderAll();
     }
-  }, [canvas, productViews, currentView, uploadedImages]);
+  }, [canvas, productViews, currentView, uploadedImages, readOnly]);
+
+  useEffect(() => {
+    if (canvas && readOnly) {
+      canvas.selection = false; // Disable multiple object selection
+      canvas.forEachObject((obj) => {
+        obj.selectable = false;
+        obj.evented = false; // Disable object interaction
+      });
+      canvas.renderAll();
+    }
+  }, [canvas, readOnly]);
 
   const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (readOnly) return;

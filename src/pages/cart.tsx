@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import { CartItem, Order } from '../types/types';
+import { saveDesign } from '../services/designService';
 
 const Cart: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -36,11 +37,23 @@ const Cart: React.FC = () => {
       return;
     }
 
+    // Uložit designy před vytvořením objednávky
+    for (const item of cartItems) {
+      const designData = {
+        view_1: item.view_1_images || [],
+        view_2: item.view_2_images || [],
+        view_3: item.view_3_images || [],
+        view_4: item.view_4_images || [],
+      };
+      await saveDesign(user, item.productId, designData);
+    }
+
     const total_price = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
 
     const { data: order, error: orderError } = await supabase
       .from('orders')
       .insert({ user_id: user.id, total_price })
+      .select()
       .single();
 
     if (orderError) {
@@ -60,16 +73,18 @@ const Cart: React.FC = () => {
       product_id: item.productId,
       quantity: item.quantity,
       price: item.price,
+      design_id: item.designId, // Added design_id
     }));
 
-    const { error: orderItemsError } = await supabase
+    const { data: insertedOrderItems, error: orderItemsError } = await supabase
       .from('order_items')
-      .insert(orderItems);
+      .insert(orderItems)
+      .select();
 
     if (orderItemsError) {
       console.error('Chyba při přidávání položek do objednávky:', orderItemsError);
     } else {
-      console.log('Objednávka byla úspěšně vytvořena');
+      console.log('Položky objednávky byly úspěšně přidány:', insertedOrderItems);
       setCartItems([]);
       localStorage.removeItem('cartItems');
     }

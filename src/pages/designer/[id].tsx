@@ -42,7 +42,9 @@ const ProductDesigner = () => {
     }
   };
 
-  const addToCart = () => {
+  const addToCart = async () => {
+    await handleSaveDesign(); // Uložit design před přidáním do košíku
+
     const newItem: CartItem = {
       designId: id,
       productId: id,

@@ -72,3 +72,6 @@ mv src/hooks/useProductViews.tsx src/features/products/hooks/
 mv src/hooks/useUser.tsx src/features/auth/hooks/
 mv src/services/designService.ts src/features/design/services/
 mv src/types/types.ts src/features/
+
+
+[[krok_1]]

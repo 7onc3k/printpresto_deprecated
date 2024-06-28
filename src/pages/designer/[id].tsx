@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../../components/Layout';
@@ -8,17 +9,17 @@ import { loadDesign, saveDesign } from '../../services/designService';
 import { fabric } from 'fabric';
 
 interface CartItem {
-  designId: string | string[] | undefined;
-  productId: string | string[] | undefined;
+  designId: string | null;
+  productId: string;
   quantity: number;
   size: string;
   price: number;
 }
 
-const ProductDesigner = () => {
+const ProductDesigner: React.FC = () => {
   const router = useRouter();
   const { id, designData } = router.query;
-  const productViews = useProductViews(id);
+  const productViews = useProductViews(id as string);
   const [uploadedImages, setUploadedImages] = useState<{ [key: string]: fabric.Image[] }>({ view_1: [], view_2: [], view_3: [], view_4: [] });
   const [currentView, setCurrentView] = useState('view_1');
   const user = useUser();
@@ -32,7 +33,7 @@ const ProductDesigner = () => {
   }, [id, designData]);
 
   const handleSaveDesign = async () => {
-    const designId = await saveDesign(user, id, uploadedImages);
+    const designId = await saveDesign(user, id as string, uploadedImages);
     return designId;
   };
 
@@ -44,17 +45,17 @@ const ProductDesigner = () => {
   };
 
   const addToCart = async () => {
-    const designId = await handleSaveDesign(); // Uložit design před přidáním do košíku
+    const designId = await handleSaveDesign();
 
     const newItem: CartItem = {
-      designId, // Použijeme správné ID designu
-      productId: id,
+      designId,
+      productId: id as string,
       quantity: 1,
-      size: '', // Velikost bude vybrána později
+      size: '',
       price: 100, // Example price, should be fetched from product data
     };
     setCartItems([...cartItems, newItem]);
-    localStorage.setItem('cartItems', JSON.stringify([...cartItems, newItem])); // Uložit do localStorage
+    localStorage.setItem('cartItems', JSON.stringify([...cartItems, newItem]));
   };
 
   return (
@@ -64,11 +65,12 @@ const ProductDesigner = () => {
         <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
           {Object.entries(productViews).map(([key, value]) =>
             value && (
-              <img
-                key={key}
+              <Image key={key}
                 src={value}
                 alt={`Náhled ${key}`}
-                style={{ width: '100px', cursor: 'pointer' }}
+                width={100}
+                height={100}
+                style={{ cursor: 'pointer' }}
                 onClick={() => setCurrentView(key)}
               />
             )
@@ -79,11 +81,11 @@ const ProductDesigner = () => {
           currentView={currentView}
           productViews={productViews}
           setUploadedImages={setUploadedImages}
-          readOnly={false} // Added readOnly prop
+          readOnly={false}
         />
         <button onClick={handleSaveDesign}>Uložit návrh</button>
         <button onClick={addToCart}>Přidat do košíku</button>
-        <button onClick={() => router.push('/cart')}>Přejít do košíku</button> {/* Přidáno tlačítko */}
+        <button onClick={() => router.push('/cart')}>Přejít do košíku</button>
       </div>
     </Layout>
   );

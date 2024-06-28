@@ -17,7 +17,9 @@ const UserProfile: React.FC<UserProfileProps> = ({
   onLogout,
   onDesignSelect,
 }) => {
-  return show ? (
+  if (!show) return null;
+
+  return (
     <div
       style={{
         position: 'fixed',
@@ -34,29 +36,34 @@ const UserProfile: React.FC<UserProfileProps> = ({
     >
       <div
         style={{
-          backgroundColor: 'blue',
+          backgroundColor: 'white',
           padding: '20px',
           borderRadius: '5px',
+          maxWidth: '80%',
+          maxHeight: '80%',
+          overflow: 'auto',
         }}
       >
-        <h2>User Profile</h2>
+        <h2>Profil uživatele</h2>
         {user ? (
           <>
             <p>Email: {user.email}</p>
-            <button type="button" onClick={onLogout}>
-              Logout
-            </button>
+            {user.user_metadata && (
+              <>
+                <p>Jméno: {user.user_metadata.full_name}</p>
+                <p>Telefon: {user.user_metadata.phone}</p>
+              </>
+            )}
+            <button onClick={onLogout}>Odhlásit se</button>
             <SavedDesigns user={user} onDesignSelect={onDesignSelect} />
           </>
         ) : (
-          <p>Loading...</p>
+          <p>Načítání...</p>
         )}
-        <button type="button" onClick={onClose}>
-          Close
-        </button>
+        <button onClick={onClose}>Zavřít</button>
       </div>
     </div>
-  ) : null;
+  );
 };
 
 export default UserProfile;

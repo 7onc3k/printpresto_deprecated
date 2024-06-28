@@ -27,20 +27,23 @@ const CanvasComponent: React.FC<CanvasComponentProps> = ({
   }, [canvas]);
 
   useEffect(() => {
-    if (canvas && productViews[currentView]) {
+    if (canvas && productViews && productViews[currentView]) {
       const imageUrl = productViews[currentView];
       canvas.clear();
 
       fabric.Image.fromURL(imageUrl, (imgObj) => {
-        imgObj.selectable = false;
-        canvas.add(imgObj);
-        canvas.sendToBack(imgObj);
+        if (imgObj) {
+          imgObj.selectable = false;
+          canvas.add(imgObj);
+          canvas.sendToBack(imgObj);
 
-        if (imgObj.width !== undefined && imgObj.height !== undefined) {
-          canvas.setDimensions({ width: imgObj.width, height: imgObj.height });
+          if (imgObj.width && imgObj.height) {
+            canvas.setDimensions({ width: imgObj.width, height: imgObj.height });
+          }
+
+          imgObj.setCoords();
+          canvas.renderAll();
         }
-
-        imgObj.setCoords();
       });
 
       if (uploadedImages[currentView]) {

@@ -43,6 +43,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onDesignSelect }) => {
       router.push('/');
     }
   };
+
   return (
     <div>
       <div style={{ position: 'relative' }}>

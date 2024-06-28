@@ -11,20 +11,29 @@ const EmployeeLogin = () => {
     setError('');
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) {
-        setError(error.message);
-      } else {
-        // Redirect to employee dashboard
-        window.location.href = '/employee/dashboard';
+      if (error) throw error;
+
+      if (data.user) {
+        const { error: updateError } = await supabase.auth.updateUser({
+          data: { is_employee: true }
+        });
+
+        if (updateError) {
+          console.error('Error updating user metadata:', updateError);
+          setError('Error verifying employee');
+        } else {
+          console.log('Employee login successful');
+          window.location.href = '/employee/dashboard';
+        }
       }
     } catch (err) {
       console.error('Error logging in:', err);
-      setError('An error occurred while logging in.');
+      setError('Error logging in');
     }
   };
 

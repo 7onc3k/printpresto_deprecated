@@ -1,4 +1,6 @@
+import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import { supabase } from '../../utils/supabaseClient';
 import { Order, OrderItem } from '../../types/types';
 import CanvasComponent from '../../components/CanvasComponent';
@@ -6,80 +8,95 @@ import useProductViews from '../../hooks/useProductViews';
 import { loadDesign } from '../../services/designService';
 import { fabric } from 'fabric';
 
-const EmployeeDashboard = () => {
+const EmployeeDashboard: React.FC = () => {
+  const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [uploadedImages, setUploadedImages] = useState<{ [key: string]: fabric.Image[] }>({ view_1: [], view_2: [], view_3: [], view_4: [] });
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
-  const [currentView, setCurrentView] = useState('view_1'); // Přidáno pro přepínání pohledů
+  const [currentView, setCurrentView] = useState('view_1');
+  const [isEmployeeVerified, setIsEmployeeVerified] = useState(false);
   const productViews = useProductViews(selectedProductId || undefined);
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*');
-
-      if (error) {
-        console.error('Error fetching orders:', error);
-      } else {
-        setOrders(data || []);
+    const checkEmployeeStatus = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      console.log('User data:', user);
+      if (!user) {
+        console.error('Uživatel není přihlášen');
+        router.push('/employee/login');
+        return;
       }
+      if (!user.user_metadata.is_employee) {
+        console.error('Uživatel není zaměstnanec');
+        router.push('/');
+        return;
+      }
+      console.log('Uživatel je zaměstnanec, načítám objednávky');
+      setIsEmployeeVerified(true);
+      fetchOrders();
     };
 
-    fetchOrders();
-  }, []);
+    checkEmployeeStatus();
+  }, [router]);
+
+  const fetchOrders = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setOrders(data || []);
+    } catch (error) {
+      console.error('Chyba při načítání objednávek:', error);
+    }
+  };
 
   const handleViewOrder = async (order: Order) => {
     setSelectedOrder(order);
-    const { data: items, error } = await supabase
-      .from('order_items')
-      .select('*')
-      .eq('order_id', order.id);
+    try {
+      const { data, error } = await supabase
+        .from('order_items')
+        .select('*')
+        .eq('order_id', order.id);
 
-    if (error) {
-      console.error('Error fetching order items:', error);
-    } else {
-      setOrderItems(items || []);
+      if (error) throw error;
+      setOrderItems(data || []);
+    } catch (error) {
+      console.error('Chyba při načítání položek objednávky:', error);
     }
   };
 
   const handleViewOrderItem = async (item: OrderItem) => {
     setSelectedProductId(item.product_id);
     if (item.design_id) {
-      console.log('Fetching design with design_id:', item.design_id);
       try {
-        const { data: design, error: designError } = await supabase
+        const { data: design, error } = await supabase
           .from('designs')
           .select('*')
           .eq('id', item.design_id)
           .single();
 
-        console.log('Fetched design:', design);
+        if (error) throw error;
 
-        if (designError) {
-          throw designError;
-        }
-
-        if (!design) {
-          console.error('No design found for design_id:', item.design_id);
-          return;
-        }
-
-        console.log('Design fetched successfully:', design);
-
-        const loadedImages = await loadDesign(item.product_id, design);
-        if (loadedImages) {
-          setUploadedImages(loadedImages);
+        if (design) {
+          const loadedImages = await loadDesign(item.product_id, design);
+          if (loadedImages) {
+            setUploadedImages(loadedImages);
+          }
         }
       } catch (error) {
-        console.error('Error fetching design:', error);
+        console.error('Chyba při načítání designu:', error);
       }
-    } else {
-      console.error('No design_id found for item:', item);
     }
   };
+
+  if (!isEmployeeVerified) {
+    return <div>Ověřování...</div>;
+  }
 
   return (
     <div>
@@ -110,16 +127,17 @@ const EmployeeDashboard = () => {
               </li>
             ))}
           </ul>
-          {selectedProductId && selectedOrder && (
+          {selectedProductId && (
             <div>
               <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
                 {Object.entries(productViews).map(([key, value]) =>
                   value && (
-                    <img
-                      key={key}
+                    <Image key={key}
                       src={value}
                       alt={`Náhled ${key}`}
-                      style={{ width: '100px', cursor: 'pointer' }}
+                      width={100}
+                      height={100}
+                      style={{ cursor: 'pointer' }}
                       onClick={() => setCurrentView(key)}
                     />
                   )

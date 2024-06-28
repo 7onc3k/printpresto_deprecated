@@ -1,3 +1,4 @@
+import Image from 'next/image';
 // src/pages/products.tsx
 import React from 'react';
 import Link from 'next/link';
@@ -16,10 +17,14 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
         {products.map((product) => (
           <div key={product.id} style={{ margin: '10px' }}>
             <Link href={`/designer/${product.id}`} passHref>
-              
-                <img src={product.image_url} alt={product.name} style={{ width: '100px', height: '100px' }} />
-                <button>{product.name}</button>
-              
+              <Image 
+                src={product.image_url} 
+                alt={product.name} 
+                width={100} 
+                height={100} 
+                style={{ objectFit: 'cover' }} 
+              />
+              <button>{product.name}</button>
             </Link>
           </div>
         ))}

@@ -74,7 +74,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ show, onClose, onRegisterClick 
           <button type="submit">Login</button>
         </form>
         <p>
-          Don't have an account? <button type="button" onClick={onRegisterClick}>Register</button>
+          Don&apos;t have an account? <button type="button" onClick={onRegisterClick}>Register</button>
         </p>
         <button type="button" onClick={onClose}>
           Close

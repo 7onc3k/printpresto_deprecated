@@ -38,23 +38,33 @@ const EmployeeLogin = () => {
   };
 
   return (
-    <div>
+    <div style={{
+      backgroundColor: 'black',
+      color: 'white',
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+    }}>
       <h2>Employee Login</h2>
-      {error && <p>{error}</p>}
-      <form onSubmit={handleLogin}>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          style={{ padding: '5px' }}
         />
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          style={{ padding: '5px' }}
         />
-        <button type="submit">Login</button>
+        <button type="submit" style={{ padding: '5px', backgroundColor: 'white', color: 'black' }}>Login</button>
       </form>
     </div>
   );

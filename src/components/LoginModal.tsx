@@ -42,7 +42,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ show, onClose, onRegisterClick 
         left: 0,
         width: '100%',
         height: '100%',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)', // Changed to darker black with transparency
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -51,7 +51,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ show, onClose, onRegisterClick 
     >
       <div
         style={{
-          backgroundColor: 'blue',
+          backgroundColor: 'black', // Changed to black
+          color: 'white', // Added white text for better readability
           padding: '20px',
           borderRadius: '5px',
         }}

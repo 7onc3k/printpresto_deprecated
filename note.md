@@ -9,103 +9,66 @@ kde je potřeba dodělat tohle image width
 - layout
 - id
 
+Děkuji za poskytnutí informací o projektu. Na základě struktury a obsahu souborů, které jste mi ukázali, mám několik doporučení, jak projekt předělat, aby se v něm lépe pracovalo:
 
-Dobře, pojďme se do toho pustit. Zde jsou kroky, které byste měli následovat pro reorganizaci a vylepšení vašeho projektu:
+1. Struktura složek:
+   - Vytvořte složku [features](file:///c%3A/Users/thanh/Downloads/Programy/printpresto/README.md#21%2C63-21%2C63) nebo `modules` a rozdělte komponenty a logiku podle funkcionality (např. [auth](file:///c%3A/Users/thanh/Downloads/Programy/printpresto/src/pages/employee/dashboard.tsx#24%2C49-24%2C49), [products](file:///c%3A/Users/thanh/Downloads/Programy/printpresto/note.md#3%2C3-3%2C3), [cart](file:///c%3A/Users/thanh/Downloads/Programy/printpresto/note.md#5%2C3-5%2C3), [design](file:///c%3A/Users/thanh/Downloads/Programy/printpresto/note.md#6%2C3-6%2C3) atd.).
+   - V každé feature složce mějte podsložky [components](file:///c%3A/Users/thanh/Downloads/Programy/printpresto/src/pages/_app.tsx#4%2C24-4%2C24), [hooks](file:///c%3A/Users/thanh/Downloads/Programy/printpresto/src/pages/designer/%5Bid%5D.tsx#6%2C28-6%2C28), [services](file:///c%3A/Users/thanh/Downloads/Programy/printpresto/src/pages/designer/%5Bid%5D.tsx#8%2C47-8%2C47) a [types](file:///c%3A/Users/thanh/Downloads/Programy/printpresto/src/pages/products.tsx#6%2C29-6%2C29).
 
-1. Vytvořte novou strukturu složek:
+2. State management:
+   - Zvažte použití globálního state managementu, jako je Redux Toolkit nebo Zustand, pro lepší správu stavu aplikace, zejména pro košík a uživatelské informace.
 
-   ```
-   src/
-   ├── components/
-   ├── features/
-   │   ├── auth/
-   │   ├── products/
-   │   ├── cart/
-   │   ├── design/
-   │   └── user/
-   ├── hooks/
-   ├── pages/
-   ├── services/
-   ├── styles/
-   ├── types/
-   └── utils/
-   ```
+3. Stylování:
+   - Místo inline stylů použijte CSS moduly nebo styled-components pro lepší organizaci a znovupoužitelnost stylů.
 
-2. Přesuňte existující soubory do nové struktury:
+4. Typování:
+   - Vytvořte centrální soubor pro typy (např. `src/types/index.ts`) a importujte typy z tohoto souboru.
 
-   - Přesuňte `src/pages/cart.tsx` do `src/features/cart/Cart.tsx`
-   - Přesuňte `src/pages/designer/[id].tsx` do `src/features/design/ProductDesigner.tsx`
-   - Přesuňte `src/pages/editproducts.tsx` do `src/features/products/EditProducts.tsx`
-   - Přesuňte `src/pages/employee/dashboard.tsx` do `src/features/user/EmployeeDashboard.tsx`
-   - Přesuňte `src/pages/products.tsx` do `src/features/products/ProductList.tsx`
-   - Přesuňte `src/components/Cart.tsx` do `src/features/cart/CartComponent.tsx`
-   - Přesuňte `src/components/CanvasComponent.tsx` do `src/features/design/CanvasComponent.tsx`
-   - Přesuňte `src/components/SavedDesigns.tsx` do `src/features/design/SavedDesigns.tsx`
-   - Přesuňte `src/components/UserProfile.tsx` do `src/features/user/UserProfile.tsx`
+5. API calls:
+   - Vytvořte centrální místo pro API volání (např. `src/api/index.ts`) a používejte custom hooks pro data fetching.
 
-3. Aktualizujte importy v přesunutých souborech, aby odpovídaly nové struktuře.
+6. Konfigurace:
+   - Vytvořte konfigurační soubor (např. `src/config.ts`) pro konstanty a konfigurační hodnoty.
 
-4. Vytvořte nový soubor `src/types/index.ts` a přesuňte do něj všechny typy z `src/types/types.ts`. Poté odstraňte `src/types/types.ts`.
+7. Komponenty:
+   - Rozdělte velké komponenty na menší, znovupoužitelné části.
+   - Používejte React.memo() pro optimalizaci výkonu u komponent, které se často překreslují.
 
-5. Vytvořte nový soubor `src/services/api.ts` pro centralizaci API volání.
+8. Routing:
+   - Zvažte použití dynamických routů pro lepší organizaci stránek.
 
-6. Vytvořte nový soubor `src/config.ts` pro konstanty a konfigurační hodnoty.
+9. Error handling:
+   - Implementujte globální error boundary pro lepší zachycení a zobrazení chyb.
 
-7. Aktualizujte `src/pages/_app.tsx`:
+10. Testování:
+    - Přidejte unit testy pro klíčové komponenty a funkce.
 
+11. Dokumentace:
+    - Přidejte komentáře k složitějším částem kódu a vytvořte README soubory pro každou feature.
 
-```1:17:src/pages/_app.tsx
-// src/pages/_app.tsx
-import '../app/globals.css'
-import type { AppProps } from 'next/app'
-import Layout from '../components/Layout'
+12. Optimalizace:
+    - Implementujte lazy loading pro komponenty a stránky, které nejsou potřeba při prvním načtení.
 
-export default function App({ Component, pageProps }: AppProps) {
-  // Předpokládáme, že onDesignSelect je funkce, kterou Layout očekává
-  const handleDesignSelect = () => {
-    // zde by byla implementace
-  };
+13. Lokalizace:
+    - Připravte projekt pro vícejazyčnost pomocí knihovny jako react-i18next.
 
-  return (
-    <Layout onDesignSelect={handleDesignSelect}>
-      <Component {...pageProps} />
-    </Layout>
-  );
-}
-```
+14. Formuláře:
+    - Použijte knihovnu pro správu formulářů, jako je react-hook-form, pro lepší validaci a správu stavu formulářů.
+
+Tyto změny by měly zlepšit organizaci, udržitelnost a škálovatelnost vašeho projektu. Začněte postupně implementovat tyto změny, abyste minimalizovali riziko regresí a udrželi funkčnost aplikace během refaktoringu.
 
 
-Změňte tento soubor tak, aby používal novou strukturu a přidejte globální state management (například pomocí React Context nebo Redux).
-
-8. Aktualizujte `src/pages/index.tsx`:
-
-
-```1:16:src/pages/index.tsx
-// src/pages/index.tsx
-import React from 'react';
-import Link from 'next/link';
-
-const Home: React.FC = () => {
-  return (
-    <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-      <h1>Vítejte na naší stránce</h1>
-      <Link href="/products" passHref>
-        <button style={{ padding: '10px 20px', fontSize: '1rem', cursor: 'pointer' }}>Začít</button>
-      </Link>
-    </div>
-  );
-};
-
-export default Home;
-```
-
-
-Upravte tento soubor, aby používal nové komponenty a strukturu.
-
-9. Přesuňte logiku pro načítání produktů z `src/pages/products.tsx` do nového custom hooku `src/hooks/useProducts.ts`.
-
-10. Vytvořte nový soubor `src/styles/globals.css` pro globální styly a importujte ho v `src/pages/_app.tsx`.
-
-11. Aktualizujte `README.md` s novými instrukcemi pro spuštění projektu a popisem nové struktury.
-
-Toto jsou základní kroky pro reorganizaci vašeho projektu. Chcete, abych vám poskytl detailnější instrukce pro některý z těchto kroků?
+mv src/components/LoginModal.tsx src/features/auth/components/
+mv src/components/RegisterModal.tsx src/features/auth/components/
+mv src/pages/employee/login.tsx src/features/auth/components/EmployeeLogin.tsx
+mv src/pages/products.tsx src/features/products/components/ProductList.tsx
+mv src/pages/editproducts.tsx src/features/products/components/EditProducts.tsx
+mv src/pages/cart.tsx src/features/cart/components/Cart.tsx
+mv src/components/Cart.tsx src/features/cart/components/CartComponent.tsx
+mv src/pages/designer/[id].tsx src/features/design/components/ProductDesigner.tsx
+mv src/components/CanvasComponent.tsx src/features/design/components/
+mv src/components/SavedDesigns.tsx src/features/design/components/
+mv src/hooks/useProductViews.tsx src/features/products/hooks/
+mv src/hooks/useUser.tsx src/features/auth/hooks/
+mv src/services/designService.ts src/features/design/services/
+mv src/types/types.ts src/features/

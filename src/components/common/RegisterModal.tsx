@@ -1,24 +1,24 @@
-// src/components/LoginModal.tsx
+// src/components/RegisterModal.tsx
 import React, { useState } from 'react';
-import { supabase } from '../utils/supabaseClient';
+import { supabase } from '../../utils/supabaseClient';
 
-interface LoginModalProps {
+interface RegisterModalProps {
   show: boolean;
   onClose: () => void;
-  onRegisterClick: () => void;
+  onLoginClick: () => void;
 }
 
-const LoginModal: React.FC<LoginModalProps> = ({ show, onClose, onRegisterClick }) => {
+const RegisterModal: React.FC<RegisterModalProps> = ({ show, onClose, onLoginClick }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
       });
@@ -29,8 +29,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ show, onClose, onRegisterClick 
         onClose();
       }
     } catch (err) {
-      console.error('Error logging in:', err);
-      setError('An error occurred while logging in.');
+      console.error('Error registering:', err);
+      setError('An error occurred while registering.');
     }
   };
 
@@ -42,7 +42,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ show, onClose, onRegisterClick 
         left: 0,
         width: '100%',
         height: '100%',
-        backgroundColor: 'rgba(0, 0, 0, 0.8)', // Changed to darker black with transparency
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -51,15 +51,14 @@ const LoginModal: React.FC<LoginModalProps> = ({ show, onClose, onRegisterClick 
     >
       <div
         style={{
-          backgroundColor: 'black', // Changed to black
-          color: 'white', // Added white text for better readability
+          backgroundColor: 'white',
           padding: '20px',
           borderRadius: '5px',
         }}
       >
-        <h2>Login</h2>
+        <h2>Register</h2>
         {error && <p>{error}</p>}
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleRegister}>
           <input
             type="email"
             placeholder="Email"
@@ -72,10 +71,10 @@ const LoginModal: React.FC<LoginModalProps> = ({ show, onClose, onRegisterClick 
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <button type="submit">Login</button>
+          <button type="submit">Register</button>
         </form>
         <p>
-          Don&apos;t have an account? <button type="button" onClick={onRegisterClick}>Register</button>
+          Already have an account? <button type="button" onClick={onLoginClick}>Login</button>
         </p>
         <button type="button" onClick={onClose}>
           Close
@@ -85,4 +84,4 @@ const LoginModal: React.FC<LoginModalProps> = ({ show, onClose, onRegisterClick 
   ) : null;
 };
 
-export default LoginModal;
+export default RegisterModal;

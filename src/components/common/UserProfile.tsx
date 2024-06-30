@@ -1,6 +1,6 @@
 import React from 'react';
 import { User } from '@supabase/supabase-js';
-import SavedDesigns from './SavedDesigns';
+import SavedDesigns from '../designer/SavedDesigns';
 
 interface UserProfileProps {
   show: boolean;

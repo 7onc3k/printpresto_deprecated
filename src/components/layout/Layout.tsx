@@ -1,11 +1,11 @@
 // src/components/Layout.tsx
 import React, { ReactNode, useState } from 'react';
 import { useRouter } from 'next/router';
-import { supabase } from '../utils/supabaseClient';
+import { supabase } from '../../utils/supabaseClient';
 import { User } from '@supabase/supabase-js';
-import LoginModal from './LoginModal';
-import RegisterModal from './RegisterModal';
-import UserProfile from './UserProfile';
+import LoginModal from '../common/LoginModal';
+import RegisterModal from '../common/RegisterModal';
+import UserProfile from '../common/UserProfile';
 
 interface LayoutProps {
   children: ReactNode;

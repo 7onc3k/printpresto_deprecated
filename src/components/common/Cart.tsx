@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../utils/supabaseClient';
-import { CartItem, Order } from '../types/types';
+import { supabase } from '../../utils/supabaseClient';
+import { CartItem, Order } from '../../types/types';
 
 const Cart: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);

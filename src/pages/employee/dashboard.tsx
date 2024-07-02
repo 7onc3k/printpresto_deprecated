@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { supabase } from '../../utils/supabaseClient';
 import { Order, OrderItem } from '../../types/types';
-import CanvasComponent from '../../components/CanvasComponent';
+import CanvasComponent from '../../components/designer/CanvasComponent';
 import useProductViews from '../../hooks/useProductViews';
 import { loadDesign } from '../../services/designService';
 import { fabric } from 'fabric';

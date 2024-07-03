@@ -37,9 +37,11 @@ const CanvasComponent: React.FC<CanvasComponentProps> = ({
           canvas.add(imgObj);
           canvas.sendToBack(imgObj);
 
-          if (imgObj.width && imgObj.height) {
-            canvas.setDimensions({ width: imgObj.width, height: imgObj.height });
-          }
+          const maxSize = 256; // Tailwind třída w-64 a h-48
+          const scale = Math.min(maxSize / imgObj.width!, maxSize / imgObj.height!);
+          imgObj.scale(scale);
+
+          canvas.setDimensions({ width: maxSize, height: maxSize });
 
           imgObj.setCoords();
           canvas.renderAll();
@@ -81,21 +83,9 @@ const CanvasComponent: React.FC<CanvasComponentProps> = ({
 
       reader.onload = (fEvent) => {
         fabric.Image.fromURL(fEvent.target!.result as string, (img) => {
-          let productImage = canvas.backgroundImage;
-          let maxImgWidth, maxImgHeight;
-
-          if (productImage instanceof fabric.Image) {
-            maxImgWidth = productImage.getScaledWidth() * 0.75;
-            maxImgHeight = productImage.getScaledHeight() * 0.75;
-          } else {
-            maxImgWidth = canvas.getWidth() * 0.75;
-            maxImgHeight = canvas.getHeight() * 0.75;
-          }
-
-          if (img.getScaledWidth() > maxImgWidth || img.getScaledHeight() > maxImgHeight) {
-            img.scaleToWidth(Math.min(img.getScaledWidth(), maxImgWidth));
-            img.scaleToHeight(Math.min(img.getScaledHeight(), maxImgHeight));
-          }
+          const maxSize = 256; // Tailwind třída w-64 a h-48
+          const scale = Math.min(maxSize / img.width!, maxSize / img.height!);
+          img.scale(scale);
 
           img.selectable = true;
           canvas.add(img);
@@ -135,7 +125,7 @@ const CanvasComponent: React.FC<CanvasComponentProps> = ({
 
   return (
     <div>
-      <canvas ref={canvasRef} width={800} height={600} />
+      <canvas ref={canvasRef} className="w-64 h-64" />
       {!readOnly && <input type="file" onChange={handleUpload} />}
       {!readOnly && <button onClick={removeSelectedImages}>Odstranit označené obrázky</button>}
     </div>

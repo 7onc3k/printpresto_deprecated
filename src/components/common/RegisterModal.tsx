@@ -1,6 +1,6 @@
-// src/components/RegisterModal.tsx
 import React, { useState } from 'react';
 import { supabase } from '../../utils/supabaseClient';
+import BaseModal from './BaseModal';
 
 interface RegisterModalProps {
   show: boolean;
@@ -34,54 +34,30 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ show, onClose, onLoginCli
     }
   };
 
-  return show ? (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 999,
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: 'white',
-          padding: '20px',
-          borderRadius: '5px',
-        }}
-      >
-        <h2>Register</h2>
-        {error && <p>{error}</p>}
-        <form onSubmit={handleRegister}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button type="submit">Register</button>
-        </form>
-        <p>
-          Already have an account? <button type="button" onClick={onLoginClick}>Login</button>
-        </p>
-        <button type="button" onClick={onClose}>
-          Close
-        </button>
-      </div>
-    </div>
-  ) : null;
+  return (
+    <BaseModal show={show} onClose={onClose}>
+      <h2>Register</h2>
+      {error && <p>{error}</p>}
+      <form onSubmit={handleRegister}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button type="submit">Register</button>
+      </form>
+      <p>
+        Already have an account? <button type="button" onClick={onLoginClick}>Login</button>
+      </p>
+    </BaseModal>
+  );
 };
 
 export default RegisterModal;

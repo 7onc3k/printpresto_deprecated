@@ -1,44 +1,36 @@
 import React, { useState } from 'react';
 import { supabase } from '../../utils/supabaseClient';
-import BaseModal from './BaseModal';
+import BaseModal from '../common/BaseModal';
+import { signIn } from '../../services/authService';
 
-interface RegisterModalProps {
+interface LoginModalProps {
   show: boolean;
   onClose: () => void;
-  onLoginClick: () => void;
+  onRegisterClick: () => void;
 }
 
-const RegisterModal: React.FC<RegisterModalProps> = ({ show, onClose, onLoginClick }) => {
+const LoginModal: React.FC<LoginModalProps> = ({ show, onClose, onRegisterClick }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
+  
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-
-      if (error) {
-        setError(error.message);
-      } else {
-        onClose();
-      }
+      await signIn(email, password);
+      onClose();
     } catch (err) {
-      console.error('Error registering:', err);
-      setError('An error occurred while registering.');
+      setError('An error occurred while logging in.');
     }
   };
 
   return (
     <BaseModal show={show} onClose={onClose}>
-      <h2>Register</h2>
+      <h2>Login</h2>
       {error && <p>{error}</p>}
-      <form onSubmit={handleRegister}>
+      <form onSubmit={handleLogin}>
         <input
           type="email"
           placeholder="Email"
@@ -51,13 +43,13 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ show, onClose, onLoginCli
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="submit">Register</button>
+        <button type="submit">Login</button>
       </form>
       <p>
-        Already have an account? <button type="button" onClick={onLoginClick}>Login</button>
+        Don't have an account? <button type="button" onClick={onRegisterClick}>Register</button>
       </p>
     </BaseModal>
   );
 };
 
-export default RegisterModal;
+export default LoginModal;

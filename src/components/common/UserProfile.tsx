@@ -1,7 +1,7 @@
 import React from 'react';
 import { User } from '@supabase/supabase-js';
 import BaseModal from './BaseModal';
-import SavedDesigns from '../designer/SavedDesigns';
+import SavedDesigns from '../products/SavedDesigns';
 
 interface UserProfileProps {
   show: boolean;

@@ -1,4 +1,128 @@
-Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto\src\components\common\Cart.tsx
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto\src\components\auth\LoginModal.tsx
+==================================================
+import React, { useState } from 'react';
+import { supabase } from '../../utils/supabaseClient';
+import BaseModal from '../common/BaseModal';
+import { signIn } from '../../services/authService';
+
+interface LoginModalProps {
+  show: boolean;
+  onClose: () => void;
+  onRegisterClick: () => void;
+}
+
+const LoginModal: React.FC<LoginModalProps> = ({ show, onClose, onRegisterClick }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+  
+    try {
+      await signIn(email, password);
+      onClose();
+    } catch (err) {
+      setError('An error occurred while logging in.');
+    }
+  };
+
+  return (
+    <BaseModal show={show} onClose={onClose}>
+      <h2>Login</h2>
+      {error && <p>{error}</p>}
+      <form onSubmit={handleLogin}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button type="submit">Login</button>
+      </form>
+      <p>
+        Don't have an account? <button type="button" onClick={onRegisterClick}>Register</button>
+      </p>
+    </BaseModal>
+  );
+};
+
+export default LoginModal;
+
+
+==================================================
+
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto\src\components\auth\RegisterModal.tsx
+==================================================
+import React, { useState } from 'react';
+import { supabase } from '../../utils/supabaseClient';
+import BaseModal from '../common/BaseModal';
+import { signUp } from '../../services/authService';
+
+interface RegisterModalProps {
+  show: boolean;
+  onClose: () => void;
+  onLoginClick: () => void;
+}
+
+const RegisterModal: React.FC<RegisterModalProps> = ({ show, onClose, onLoginClick }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+  
+    try {
+      await signUp(email, password);
+      onClose();
+    } catch (err) {
+      setError('An error occurred while registering.');
+    }
+  };
+  
+  
+
+  return (
+    <BaseModal show={show} onClose={onClose}>
+      <h2>Register</h2>
+      {error && <p>{error}</p>}
+      <form onSubmit={handleRegister}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button type="submit">Register</button>
+      </form>
+      <p>
+        Already have an account? <button type="button" onClick={onLoginClick}>Login</button>
+      </p>
+    </BaseModal>
+  );
+};
+
+export default RegisterModal;
+
+
+==================================================
+
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto\src\components\cart\Cart.tsx
 ==================================================
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../utils/supabaseClient';
@@ -81,212 +205,17 @@ export default Cart;
 
 ==================================================
 
-Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto\src\components\common\LoginModal.tsx
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto\src\components\common\BaseModal.tsx
 ==================================================
-// src/components/LoginModal.tsx
-import React, { useState } from 'react';
-import { supabase } from '../../utils/supabaseClient';
+import React, { ReactNode } from 'react';
 
-interface LoginModalProps {
+interface BaseModalProps {
   show: boolean;
   onClose: () => void;
-  onRegisterClick: () => void;
+  children: ReactNode;
 }
 
-const LoginModal: React.FC<LoginModalProps> = ({ show, onClose, onRegisterClick }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        setError(error.message);
-      } else {
-        onClose();
-      }
-    } catch (err) {
-      console.error('Error logging in:', err);
-      setError('An error occurred while logging in.');
-    }
-  };
-
-  return show ? (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'rgba(0, 0, 0, 0.8)', // Changed to darker black with transparency
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 999,
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: 'black', // Changed to black
-          color: 'white', // Added white text for better readability
-          padding: '20px',
-          borderRadius: '5px',
-        }}
-      >
-        <h2>Login</h2>
-        {error && <p>{error}</p>}
-        <form onSubmit={handleLogin}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button type="submit">Login</button>
-        </form>
-        <p>
-          Don&apos;t have an account? <button type="button" onClick={onRegisterClick}>Register</button>
-        </p>
-        <button type="button" onClick={onClose}>
-          Close
-        </button>
-      </div>
-    </div>
-  ) : null;
-};
-
-export default LoginModal;
-
-==================================================
-
-Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto\src\components\common\RegisterModal.tsx
-==================================================
-// src/components/RegisterModal.tsx
-import React, { useState } from 'react';
-import { supabase } from '../../utils/supabaseClient';
-
-interface RegisterModalProps {
-  show: boolean;
-  onClose: () => void;
-  onLoginClick: () => void;
-}
-
-const RegisterModal: React.FC<RegisterModalProps> = ({ show, onClose, onLoginClick }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-
-      if (error) {
-        setError(error.message);
-      } else {
-        onClose();
-      }
-    } catch (err) {
-      console.error('Error registering:', err);
-      setError('An error occurred while registering.');
-    }
-  };
-
-  return show ? (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 999,
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: 'white',
-          padding: '20px',
-          borderRadius: '5px',
-        }}
-      >
-        <h2>Register</h2>
-        {error && <p>{error}</p>}
-        <form onSubmit={handleRegister}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button type="submit">Register</button>
-        </form>
-        <p>
-          Already have an account? <button type="button" onClick={onLoginClick}>Login</button>
-        </p>
-        <button type="button" onClick={onClose}>
-          Close
-        </button>
-      </div>
-    </div>
-  ) : null;
-};
-
-export default RegisterModal;
-
-==================================================
-
-Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto\src\components\common\UserProfile.tsx
-==================================================
-import React from 'react';
-import { User } from '@supabase/supabase-js';
-import SavedDesigns from '../designer/SavedDesigns';
-
-interface UserProfileProps {
-  show: boolean;
-  user: User | null;
-  onClose: () => void;
-  onLogout: () => void;
-  onDesignSelect: (productId: string, uploadedImages: any) => void;
-}
-
-const UserProfile: React.FC<UserProfileProps> = ({
-  show,
-  user,
-  onClose,
-  onLogout,
-  onDesignSelect,
-}) => {
+const BaseModal: React.FC<BaseModalProps> = ({ show, onClose, children }) => {
   if (!show) return null;
 
   return (
@@ -309,246 +238,67 @@ const UserProfile: React.FC<UserProfileProps> = ({
           backgroundColor: 'white',
           padding: '20px',
           borderRadius: '5px',
-          maxWidth: '80%',
-          maxHeight: '80%',
-          overflow: 'auto',
         }}
       >
-        <h2>Profil uživatele</h2>
-        {user ? (
-          <>
-            <p>Email: {user.email}</p>
-            {user.user_metadata && (
-              <>
-                <p>Jméno: {user.user_metadata.full_name}</p>
-                <p>Telefon: {user.user_metadata.phone}</p>
-              </>
-            )}
-            <button onClick={onLogout}>Odhlásit se</button>
-            <SavedDesigns user={user} onDesignSelect={onDesignSelect} />
-          </>
-        ) : (
-          <p>Načítání...</p>
-        )}
-        <button onClick={onClose}>Zavřít</button>
+        {children}
+        <button type="button" onClick={onClose}>
+          Close
+        </button>
       </div>
     </div>
   );
 };
 
-export default UserProfile;
+export default BaseModal;
+
 
 ==================================================
 
-Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto\src\components\designer\CanvasComponent.tsx
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto\src\components\common\UserProfile.tsx
 ==================================================
-import React, { useEffect, useRef } from 'react';
-import { fabric } from 'fabric';
-
-interface CanvasComponentProps {
-  uploadedImages: { [key: string]: fabric.Image[] };
-  currentView: string;
-  productViews: { [key: string]: string };
-  setUploadedImages: React.Dispatch<React.SetStateAction<{ [key: string]: fabric.Image[] }>>;
-  readOnly: boolean;
-}
-
-const CanvasComponent: React.FC<CanvasComponentProps> = ({
-  uploadedImages,
-  currentView,
-  productViews,
-  setUploadedImages,
-  readOnly,
-}) => {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [canvas, setCanvas] = React.useState<fabric.Canvas | null>(null);
-
-  useEffect(() => {
-    if (canvasRef.current && !canvas) {
-      const newCanvas = new fabric.Canvas(canvasRef.current);
-      setCanvas(newCanvas);
-    }
-  }, [canvas]);
-
-  useEffect(() => {
-    if (canvas && productViews && productViews[currentView]) {
-      const imageUrl = productViews[currentView];
-      canvas.clear();
-
-      fabric.Image.fromURL(imageUrl, (imgObj) => {
-        if (imgObj) {
-          imgObj.selectable = false;
-          canvas.add(imgObj);
-          canvas.sendToBack(imgObj);
-
-          const maxSize = 256; // Tailwind třída w-64 a h-48
-          const scale = Math.min(maxSize / imgObj.width!, maxSize / imgObj.height!);
-          imgObj.scale(scale);
-
-          canvas.setDimensions({ width: maxSize, height: maxSize });
-
-          imgObj.setCoords();
-          canvas.renderAll();
-        }
-      });
-
-      if (uploadedImages[currentView]) {
-        uploadedImages[currentView].forEach(img => {
-          if (!canvas.contains(img)) {
-            img.selectable = !readOnly; // Set selectable to false if readOnly
-            canvas.add(img);
-            img.bringToFront();
-            img.setCoords();
-          }
-        });
-      }
-
-      canvas.renderAll();
-    }
-  }, [canvas, productViews, currentView, uploadedImages, readOnly]);
-
-  useEffect(() => {
-    if (canvas && readOnly) {
-      canvas.selection = false; // Disable multiple object selection
-      canvas.forEachObject((obj) => {
-        obj.selectable = false;
-        obj.evented = false; // Disable object interaction
-      });
-      canvas.renderAll();
-    }
-  }, [canvas, readOnly]);
-
-  const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (readOnly) return;
-
-    const file = event.target.files && event.target.files[0];
-    if (file && canvas) {
-      const reader = new FileReader();
-
-      reader.onload = (fEvent) => {
-        fabric.Image.fromURL(fEvent.target!.result as string, (img) => {
-          const maxSize = 256; // Tailwind třída w-64 a h-48
-          const scale = Math.min(maxSize / img.width!, maxSize / img.height!);
-          img.scale(scale);
-
-          img.selectable = true;
-          canvas.add(img);
-          img.bringToFront();
-          img.setCoords();
-          canvas.renderAll();
-
-          setUploadedImages(prev => ({
-            ...prev,
-            [currentView]: [...prev[currentView], img]
-          }));
-        });
-      };
-
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const removeSelectedImages = () => {
-    if (readOnly) return;
-
-    if (!canvas) return;
-
-    const activeObjects = canvas.getActiveObjects();
-    if (activeObjects.length === 0) return;
-
-    activeObjects.forEach(obj => canvas.remove(obj));
-    canvas.discardActiveObject();
-    canvas.requestRenderAll();
-
-    const updatedImages = uploadedImages[currentView].filter(img => !activeObjects.includes(img));
-    setUploadedImages({
-      ...uploadedImages,
-      [currentView]: updatedImages
-    });
-  };
-
-  return (
-    <div>
-      <canvas ref={canvasRef} className="w-64 h-64" />
-      {!readOnly && <input type="file" onChange={handleUpload} />}
-      {!readOnly && <button onClick={removeSelectedImages}>Odstranit označené obrázky</button>}
-    </div>
-  );
-};
-
-export default CanvasComponent;
-
-==================================================
-
-Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto\src\components\designer\SavedDesigns.tsx
-==================================================
-import React, { useEffect, useState } from 'react';
-import { supabase } from '../../utils/supabaseClient';
+import React from 'react';
 import { User } from '@supabase/supabase-js';
-import { useRouter } from 'next/router';
+import BaseModal from './BaseModal';
+import SavedDesigns from '../products/SavedDesigns';
 
-interface SavedDesignsProps {
+interface UserProfileProps {
+  show: boolean;
   user: User | null;
+  onClose: () => void;
+  onLogout: () => void;
   onDesignSelect: (productId: string, uploadedImages: any) => void;
 }
 
-const SavedDesigns: React.FC<SavedDesignsProps> = ({ user }) => {
-  const [savedDesigns, setSavedDesigns] = useState<any[]>([]);
-  const router = useRouter();
-
-  useEffect(() => {
-    const fetchSavedDesigns = async () => {
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from('designs')
-        .select('*')
-        .eq('user_id', user.id);
-
-      if (error) {
-        console.error('Chyba při načítání uložených návrhů:', error);
-      } else {
-        setSavedDesigns(data || []);
-      }
-    };
-
-    fetchSavedDesigns();
-  }, [user]);
-
-  const handleDesignSelect = (productId: string, design: any) => {
-    const designData = {
-      view_1_images: design.view_1_images,
-      view_2_images: design.view_2_images,
-      view_3_images: design.view_3_images,
-      view_4_images: design.view_4_images,
-    };
-
-    const encodedDesignData = encodeURIComponent(JSON.stringify(designData));
-    router.push(`/designer/${productId}?designData=${encodedDesignData}`);
-  };
-
+const UserProfile: React.FC<UserProfileProps> = ({
+  show,
+  user,
+  onClose,
+  onLogout,
+  onDesignSelect,
+}) => {
   return (
-    <div>
-      <h2>Uložené návrhy</h2>
-      {savedDesigns.length > 0 ? (
-        <ul>
-          {savedDesigns.map((design) => (
-            <li key={design.id}>
-              <button onClick={() => handleDesignSelect(design.product_id, design)}>
-                {/* Zobrazit název produktu nebo jiné informace */}
-                Návrh pro produkt {design.product_id}
-              </button>
-            </li>
-          ))}
-        </ul>
+    <BaseModal show={show} onClose={onClose}>
+      <h2>Profil uživatele</h2>
+      {user ? (
+        <>
+          <p>Email: {user.email}</p>
+          {user.user_metadata && (
+            <>
+              <p>Jméno: {user.user_metadata.full_name}</p>
+              <p>Telefon: {user.user_metadata.phone}</p>
+            </>
+          )}
+          <button onClick={onLogout}>Odhlásit se</button>
+          <SavedDesigns user={user} onDesignSelect={onDesignSelect} />
+        </>
       ) : (
-        <p>Žádné uložené návrhy</p>
+        <p>Načítání...</p>
       )}
-    </div>
+    </BaseModal>
   );
 };
 
-export default SavedDesigns;
+export default UserProfile;
 
 
 ==================================================
@@ -706,6 +456,173 @@ export default ProductList;
 
 ==================================================
 
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto\src\components\employee\EmployeeDashboard.tsx
+==================================================
+import Image from 'next/image';
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import { supabase } from '../../utils/supabaseClient';
+import { Order, OrderItem } from '../../types/types';
+import CanvasComponent from '../products/CanvasComponent';
+import useProductViews from '../../hooks/useProductViews';
+import { loadDesign } from '../../services/designService';
+import { fabric } from 'fabric';
+
+const EmployeeDashboard: React.FC = () => {
+  const router = useRouter();
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
+  const [uploadedImages, setUploadedImages] = useState<{ [key: string]: fabric.Image[] }>({ view_1: [], view_2: [], view_3: [], view_4: [] });
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+  const [currentView, setCurrentView] = useState('view_1');
+  const [isEmployeeVerified, setIsEmployeeVerified] = useState(false);
+  const productViews = useProductViews(selectedProductId || undefined);
+
+  useEffect(() => {
+    const checkEmployeeStatus = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      console.log('User data:', user);
+      if (!user) {
+        console.error('Uživatel není přihlášen');
+        router.push('/employee/login');
+        return;
+      }
+      if (!user.user_metadata.is_employee) {
+        console.error('Uživatel není zaměstnanec');
+        router.push('/');
+        return;
+      }
+      console.log('Uživatel je zaměstnanec, načítám objednávky');
+      setIsEmployeeVerified(true);
+      fetchOrders();
+    };
+
+    checkEmployeeStatus();
+  }, [router]);
+
+  const fetchOrders = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setOrders(data || []);
+    } catch (error) {
+      console.error('Chyba při načítání objednávek:', error);
+    }
+  };
+
+  const handleViewOrder = async (order: Order) => {
+    setSelectedOrder(order);
+    try {
+      const { data, error } = await supabase
+        .from('order_items')
+        .select('*')
+        .eq('order_id', order.id);
+
+      if (error) throw error;
+      setOrderItems(data || []);
+    } catch (error) {
+      console.error('Chyba při načítání položek objednávky:', error);
+    }
+  };
+
+  const handleViewOrderItem = async (item: OrderItem) => {
+    setSelectedProductId(item.product_id);
+    if (item.design_id) {
+      try {
+        const { data: design, error } = await supabase
+          .from('designs')
+          .select('*')
+          .eq('id', item.design_id)
+          .single();
+
+        if (error) throw error;
+
+        if (design) {
+          const loadedImages = await loadDesign(item.product_id, design);
+          if (loadedImages) {
+            setUploadedImages(loadedImages);
+          }
+        }
+      } catch (error) {
+        console.error('Chyba při načítání designu:', error);
+      }
+    }
+  };
+
+  if (!isEmployeeVerified) {
+    return <div>Ověřování...</div>;
+  }
+
+  return (
+    <div>
+      <h2>Objednávky zákazníků</h2>
+      {orders.length > 0 ? (
+        <ul>
+          {orders.map((order) => (
+            <li key={order.id}>
+              <p>ID objednávky: {order.id}</p>
+              <p>Celková cena: {order.total_price}</p>
+              <button onClick={() => handleViewOrder(order)}>Zobrazit objednávku</button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>Žádné objednávky nenalezeny</p>
+      )}
+      {selectedOrder && (
+        <div>
+          <h3>Náhled objednávky</h3>
+          <ul>
+            {orderItems.map((item) => (
+              <li key={item.id}>
+                <p>ID produktu: {item.product_id}</p>
+                <p>Množství: {item.quantity}</p>
+                <p>Cena: {item.price}</p>
+                <button onClick={() => handleViewOrderItem(item)}>Zobrazit návrh</button>
+              </li>
+            ))}
+          </ul>
+          {selectedProductId && (
+            <div>
+              <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+                {Object.entries(productViews).map(([key, value]) =>
+                  value && (
+                    <Image key={key}
+                      src={value}
+                      alt={`Náhled ${key}`}
+                      width={100}
+                      height={100}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setCurrentView(key)}
+                    />
+                  )
+                )}
+              </div>
+              <CanvasComponent
+                uploadedImages={uploadedImages}
+                currentView={currentView}
+                productViews={productViews}
+                setUploadedImages={setUploadedImages}
+                readOnly={true}
+              />
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default EmployeeDashboard;
+
+
+==================================================
+
 Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto\src\components\layout\Layout.tsx
 ==================================================
 // src/components/Layout.tsx
@@ -713,9 +630,10 @@ import React, { ReactNode, useState } from 'react';
 import { useRouter } from 'next/router';
 import { supabase } from '../../utils/supabaseClient';
 import { User } from '@supabase/supabase-js';
-import LoginModal from '../common/LoginModal';
-import RegisterModal from '../common/RegisterModal';
+import LoginModal from '../auth/LoginModal';
+import RegisterModal from '../auth/RegisterModal';
 import UserProfile from '../common/UserProfile';
+import { signOut } from '../../services/authService';
 
 interface LayoutProps {
   children: ReactNode;
@@ -744,13 +662,13 @@ const Layout: React.FC<LayoutProps> = ({ children, onDesignSelect }) => {
   };
 
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error('Error logging out:', error);
-    } else {
+    try {
+      await signOut();
       setUser(null);
       setShowUserProfile(false);
       router.push('/');
+    } catch (error) {
+      console.error('Error logging out:', error);
     }
   };
 
@@ -808,6 +726,219 @@ export default Layout;
 
 ==================================================
 
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto\src\components\products\CanvasComponent.tsx
+==================================================
+import React, { useEffect, useRef } from 'react';
+import { fabric } from 'fabric';
+
+interface CanvasComponentProps {
+  uploadedImages: { [key: string]: fabric.Image[] };
+  currentView: string;
+  productViews: { [key: string]: string };
+  setUploadedImages: React.Dispatch<React.SetStateAction<{ [key: string]: fabric.Image[] }>>;
+  readOnly: boolean;
+}
+
+const CanvasComponent: React.FC<CanvasComponentProps> = ({
+  uploadedImages,
+  currentView,
+  productViews,
+  setUploadedImages,
+  readOnly,
+}) => {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [canvas, setCanvas] = React.useState<fabric.Canvas | null>(null);
+
+  useEffect(() => {
+    if (canvasRef.current && !canvas) {
+      const newCanvas = new fabric.Canvas(canvasRef.current);
+      setCanvas(newCanvas);
+    }
+  }, [canvas]);
+
+  useEffect(() => {
+    if (canvas && productViews && productViews[currentView]) {
+      const imageUrl = productViews[currentView];
+      canvas.clear();
+
+      fabric.Image.fromURL(imageUrl, (imgObj) => {
+        if (imgObj) {
+          imgObj.selectable = false;
+          canvas.add(imgObj);
+          canvas.sendToBack(imgObj);
+
+          const maxSize = 256; // Tailwind třída w-64 a h-48
+          const scale = Math.min(maxSize / imgObj.width!, maxSize / imgObj.height!);
+          imgObj.scale(scale);
+
+          canvas.setDimensions({ width: maxSize, height: maxSize });
+
+          imgObj.setCoords();
+          canvas.renderAll();
+        }
+      });
+
+      if (uploadedImages[currentView]) {
+        uploadedImages[currentView].forEach(img => {
+          if (!canvas.contains(img)) {
+            img.selectable = !readOnly; // Set selectable to false if readOnly
+            canvas.add(img);
+            img.bringToFront();
+            img.setCoords();
+          }
+        });
+      }
+
+      canvas.renderAll();
+    }
+  }, [canvas, productViews, currentView, uploadedImages, readOnly]);
+
+  useEffect(() => {
+    if (canvas && readOnly) {
+      canvas.selection = false; // Disable multiple object selection
+      canvas.forEachObject((obj) => {
+        obj.selectable = false;
+        obj.evented = false; // Disable object interaction
+      });
+      canvas.renderAll();
+    }
+  }, [canvas, readOnly]);
+
+  const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (readOnly) return;
+
+    const file = event.target.files && event.target.files[0];
+    if (file && canvas) {
+      const reader = new FileReader();
+
+      reader.onload = (fEvent) => {
+        fabric.Image.fromURL(fEvent.target!.result as string, (img) => {
+          const maxSize = 256; // Tailwind třída w-64 a h-48
+          const scale = Math.min(maxSize / img.width!, maxSize / img.height!);
+          img.scale(scale);
+
+          img.selectable = true;
+          canvas.add(img);
+          img.bringToFront();
+          img.setCoords();
+          canvas.renderAll();
+
+          setUploadedImages(prev => ({
+            ...prev,
+            [currentView]: [...prev[currentView], img]
+          }));
+        });
+      };
+
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeSelectedImages = () => {
+    if (readOnly) return;
+
+    if (!canvas) return;
+
+    const activeObjects = canvas.getActiveObjects();
+    if (activeObjects.length === 0) return;
+
+    activeObjects.forEach(obj => canvas.remove(obj));
+    canvas.discardActiveObject();
+    canvas.requestRenderAll();
+
+    const updatedImages = uploadedImages[currentView].filter(img => !activeObjects.includes(img));
+    setUploadedImages({
+      ...uploadedImages,
+      [currentView]: updatedImages
+    });
+  };
+
+  return (
+    <div>
+      <canvas ref={canvasRef} className="w-64 h-64" />
+      {!readOnly && <input type="file" onChange={handleUpload} />}
+      {!readOnly && <button onClick={removeSelectedImages}>Odstranit označené obrázky</button>}
+    </div>
+  );
+};
+
+export default CanvasComponent;
+
+==================================================
+
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto\src\components\products\SavedDesigns.tsx
+==================================================
+import React, { useEffect, useState } from 'react';
+import { supabase } from '../../utils/supabaseClient';
+import { User } from '@supabase/supabase-js';
+import { useRouter } from 'next/router';
+
+interface SavedDesignsProps {
+  user: User | null;
+  onDesignSelect: (productId: string, uploadedImages: any) => void;
+}
+
+const SavedDesigns: React.FC<SavedDesignsProps> = ({ user }) => {
+  const [savedDesigns, setSavedDesigns] = useState<any[]>([]);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchSavedDesigns = async () => {
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('designs')
+        .select('*')
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Chyba při načítání uložených návrhů:', error);
+      } else {
+        setSavedDesigns(data || []);
+      }
+    };
+
+    fetchSavedDesigns();
+  }, [user]);
+
+  const handleDesignSelect = (productId: string, design: any) => {
+    const designData = {
+      view_1_images: design.view_1_images,
+      view_2_images: design.view_2_images,
+      view_3_images: design.view_3_images,
+      view_4_images: design.view_4_images,
+    };
+
+    const encodedDesignData = encodeURIComponent(JSON.stringify(designData));
+    router.push(`/designer/${productId}?designData=${encodedDesignData}`);
+  };
+
+  return (
+    <div>
+      <h2>Uložené návrhy</h2>
+      {savedDesigns.length > 0 ? (
+        <ul>
+          {savedDesigns.map((design) => (
+            <li key={design.id}>
+              <button onClick={() => handleDesignSelect(design.product_id, design)}>
+                {/* Zobrazit název produktu nebo jiné informace */}
+                Návrh pro produkt {design.product_id}
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>Žádné uložené návrhy</p>
+      )}
+    </div>
+  );
+};
+
+export default SavedDesigns;
+
+
+==================================================
+
 Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto\src\hooks\useProductViews.tsx
 ==================================================
 import { useEffect, useState } from 'react';
@@ -853,22 +984,23 @@ Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto\src\hooks\useUser.t
 import { useEffect, useState } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import { User } from '@supabase/supabase-js';
+import { getUser } from '../services/authService';
 
 const useUser = () => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (error) {
-        console.error('Chyba při načítání uživatele:', error);
-      } else {
-        setUser(data.user || null);
+    const fetchUser = async () => {
+      try {
+        const user = await getUser();
+        setUser(user);
+      } catch (error) {
+        console.error('Error fetching user:', error);
       }
     };
-
-    getUser();
-  }, []);
+  
+    fetchUser();
+  }, []); 
 
   return user;
 };
@@ -1225,6 +1357,7 @@ Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto\src\pages\_app.tsx
 import '../app/globals.css'
 import type { AppProps } from 'next/app'
 import Layout from '../components/layout/Layout'
+import React from 'react';
 
 export default function App({ Component, pageProps }: AppProps) {
   // Předpokládáme, že onDesignSelect je funkce, kterou Layout očekává
@@ -1248,7 +1381,7 @@ import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../../components/layout/Layout';
-import CanvasComponent from '../../components/designer/CanvasComponent';
+import CanvasComponent from '../../components/products/CanvasComponent';
 import useUser from '../../hooks/useUser';
 import useProductViews from '../../hooks/useProductViews';
 import { loadDesign, saveDesign } from '../../services/designService';
@@ -1348,7 +1481,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { supabase } from '../../utils/supabaseClient';
 import { Order, OrderItem } from '../../types/types';
-import CanvasComponent from '../../components/designer/CanvasComponent';
+import CanvasComponent from '../../components/products/CanvasComponent';
 import useProductViews from '../../hooks/useProductViews';
 import { loadDesign } from '../../services/designService';
 import { fabric } from 'fabric';

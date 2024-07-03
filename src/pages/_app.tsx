@@ -2,6 +2,7 @@
 import '../app/globals.css'
 import type { AppProps } from 'next/app'
 import Layout from '../components/layout/Layout'
+import React from 'react';
 
 export default function App({ Component, pageProps }: AppProps) {
   // Předpokládáme, že onDesignSelect je funkce, kterou Layout očekává

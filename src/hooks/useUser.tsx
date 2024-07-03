@@ -1,22 +1,23 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import { User } from '@supabase/supabase-js';
+import { getUser } from '../services/authService';
 
 const useUser = () => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (error) {
-        console.error('Chyba při načítání uživatele:', error);
-      } else {
-        setUser(data.user || null);
+    const fetchUser = async () => {
+      try {
+        const user = await getUser();
+        setUser(user);
+      } catch (error) {
+        console.error('Error fetching user:', error);
       }
     };
-
-    getUser();
-  }, []);
+  
+    fetchUser();
+  }, []); 
 
   return user;
 };

@@ -2,7 +2,7 @@ import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../../components/layout/Layout';
-import CanvasComponent from '../../components/designer/CanvasComponent';
+import CanvasComponent from '../../components/products/CanvasComponent';
 import useUser from '../../hooks/useUser';
 import useProductViews from '../../hooks/useProductViews';
 import { loadDesign, saveDesign } from '../../services/designService';

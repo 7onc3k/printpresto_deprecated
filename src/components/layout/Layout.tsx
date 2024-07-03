@@ -3,9 +3,10 @@ import React, { ReactNode, useState } from 'react';
 import { useRouter } from 'next/router';
 import { supabase } from '../../utils/supabaseClient';
 import { User } from '@supabase/supabase-js';
-import LoginModal from '../common/LoginModal';
-import RegisterModal from '../common/RegisterModal';
+import LoginModal from '../auth/LoginModal';
+import RegisterModal from '../auth/RegisterModal';
 import UserProfile from '../common/UserProfile';
+import { signOut } from '../../services/authService';
 
 interface LayoutProps {
   children: ReactNode;
@@ -34,13 +35,13 @@ const Layout: React.FC<LayoutProps> = ({ children, onDesignSelect }) => {
   };
 
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error('Error logging out:', error);
-    } else {
+    try {
+      await signOut();
       setUser(null);
       setShowUserProfile(false);
       router.push('/');
+    } catch (error) {
+      console.error('Error logging out:', error);
     }
   };
 

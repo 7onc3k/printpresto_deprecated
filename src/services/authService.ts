@@ -52,3 +52,8 @@ export const getUser = async () => {
     throw error;
   }
 };
+
+export const isAuthenticated = async () => {
+  const { data: { user } } = await supabase.auth.getUser();
+  return !!user;
+};

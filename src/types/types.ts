@@ -1,13 +1,15 @@
+// src/types/types.ts
+
 export interface Product {
-  id: number;
+  id: string;
   name: string;
-  description?: string;  // ? značí, že pole je volitelné
+  description: string;
   image_url: string;
   price: number;
-}
-
-interface Params {
-  id: string;
+  view_1: string;
+  view_2: string;
+  view_3: string;
+  view_4: string;
 }
 
 export interface Order {
@@ -15,8 +17,8 @@ export interface Order {
   user_id: string;
   total_price: number;
   created_at: string;
-  updated_at?: string;
-  status?: string;
+  updated_at: string;
+  status: 'pending' | 'processing' | 'completed' | 'cancelled';
 }
 
 export interface OrderItem {
@@ -25,7 +27,8 @@ export interface OrderItem {
   product_id: string;
   quantity: number;
   price: number;
-  design_id?: string;  // Přidáno design_id
+  design_id: string;
+  size: string;
 }
 
 export interface Design {
@@ -33,20 +36,31 @@ export interface Design {
   user_id: string;
   product_id: string;
   created_at: string;
-  view_1_images?: any;
-  view_2_images?: any;
-  view_3_images?: any;
-  view_4_images?: any;
+  view_1_images: DesignImage[];
+  view_2_images: DesignImage[];
+  view_3_images: DesignImage[];
+  view_4_images: DesignImage[];
+}
+
+export interface DesignImage {
+  src: string;
+  left: number;
+  top: number;
+  scaleX: number;
+  scaleY: number;
+  angle: number;
 }
 
 export interface CartItem {
-  designId: string;
+  designId: string | null;
   productId: string;
   quantity: number;
-  size: string;
+  size: 'S' | 'M' | 'L' | 'XL';
   price: number;
-  view_1_images?: any[]; // Přidáno
-  view_2_images?: any[]; // Přidáno
-  view_3_images?: any[]; // Přidáno
-  view_4_images?: any[]; // Přidáno
 }
+
+export type ProductView = 'view_1' | 'view_2' | 'view_3' | 'view_4';
+
+export type ProductViews = {
+  [K in ProductView]: string;
+};

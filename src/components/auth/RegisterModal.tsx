@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { supabase } from '../../utils/supabaseClient';
-import BaseModal from '../common/BaseModal';
 import { signUp } from '../../services/authService';
+import BaseModal from '../common/BaseModal';
 
 interface RegisterModalProps {
   show: boolean;
@@ -25,30 +24,31 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ show, onClose, onLoginCli
       setError('An error occurred while registering.');
     }
   };
-  
-  
 
   return (
-    <BaseModal show={show} onClose={onClose}>
-      <h2>Register</h2>
-      {error && <p>{error}</p>}
-      <form onSubmit={handleRegister}>
+    <BaseModal show={show} onClose={onClose} title="Register">
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+      <form onSubmit={handleRegister} className="space-y-4">
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          className="w-full px-3 py-2 border rounded text-black"
         />
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          className="w-full px-3 py-2 border rounded text-black"
         />
-        <button type="submit">Register</button>
+        <button type="submit" className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+          Register
+        </button>
       </form>
-      <p>
-        Already have an account? <button type="button" onClick={onLoginClick}>Login</button>
+      <p className="mt-4">
+        Already have an account? <button type="button" onClick={onLoginClick} className="text-blue-500 hover:underline">Login</button>
       </p>
     </BaseModal>
   );

@@ -1,6 +1,37 @@
 import { supabase } from '../utils/supabaseClient';
 import { fabric } from 'fabric';
 
+function mapImages(images: fabric.Image[]) {
+  return images.map(img => ({
+    ...img.toObject(),
+    left: img.left,
+    top: img.top,
+    scaleX: img.scaleX,
+    scaleY: img.scaleY,
+    angle: img.angle
+  }));
+}
+
+async function loadImages(imagesData: any) {
+  if (!imagesData) return [];
+  console.log('Loading images:', imagesData);
+  return await Promise.all(imagesData.map((imgData: any) =>
+    new Promise<fabric.Image>((resolve) => {
+      fabric.Image.fromURL(imgData.src, (img) => {
+        console.log('Loaded image:', img);
+        img.set({
+          left: imgData.left,
+          top: imgData.top,
+          scaleX: imgData.scaleX,
+          scaleY: imgData.scaleY,
+          angle: imgData.angle,
+        });
+        resolve(img);
+      });
+    })
+  ));
+}
+
 export const saveDesign = async (user: any, id: string | string[] | undefined, uploadedImages: { [key: string]: fabric.Image[] }) => {
   if (!user) {
     console.error('Uživatel není přihlášen');
@@ -10,38 +41,10 @@ export const saveDesign = async (user: any, id: string | string[] | undefined, u
   const designData = {
     user_id: user.id,
     product_id: id,
-    view_1_images: uploadedImages.view_1.map(img => ({
-      ...img.toObject(),
-      left: img.left,
-      top: img.top,
-      scaleX: img.scaleX,
-      scaleY: img.scaleY,
-      angle: img.angle
-    })),
-    view_2_images: uploadedImages.view_2.map(img => ({
-      ...img.toObject(),
-      left: img.left,
-      top: img.top,
-      scaleX: img.scaleX,
-      scaleY: img.scaleY,
-      angle: img.angle
-    })),
-    view_3_images: uploadedImages.view_3.map(img => ({
-      ...img.toObject(),
-      left: img.left,
-      top: img.top,
-      scaleX: img.scaleX,
-      scaleY: img.scaleY,
-      angle: img.angle
-    })),
-    view_4_images: uploadedImages.view_4.map(img => ({
-      ...img.toObject(),
-      left: img.left,
-      top: img.top,
-      scaleX: img.scaleX,
-      scaleY: img.scaleY,
-      angle: img.angle
-    }))
+    view_1_images: mapImages(uploadedImages.view_1),
+    view_2_images: mapImages(uploadedImages.view_2),
+    view_3_images: mapImages(uploadedImages.view_3),
+    view_4_images: mapImages(uploadedImages.view_4)
   };
 
   try {
@@ -71,26 +74,6 @@ export const loadDesign = async (productId: string, design: any) => {
     if (error) throw error;
 
     if (productData) {
-      const loadImages = async (imagesData: any) => {
-        if (!imagesData) return [];
-        console.log('Loading images:', imagesData);
-        return await Promise.all(imagesData.map((imgData: any) =>
-          new Promise<fabric.Image>((resolve) => {
-            fabric.Image.fromURL(imgData.src, (img) => {
-              console.log('Loaded image:', img);
-              img.set({
-                left: imgData.left,
-                top: imgData.top,
-                scaleX: imgData.scaleX,
-                scaleY: imgData.scaleY,
-                angle: imgData.angle,
-              });
-              resolve(img);
-            });
-          })
-        ));
-      };
-
       const updatedImages = {
         view_1: await loadImages(design.view_1_images),
         view_2: await loadImages(design.view_2_images),

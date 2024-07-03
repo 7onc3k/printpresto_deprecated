@@ -1,3 +1,4 @@
+// src/components/common/UserProfile.tsx
 import React from 'react';
 import { User } from '@supabase/supabase-js';
 import BaseModal from './BaseModal';
@@ -8,7 +9,6 @@ interface UserProfileProps {
   user: User | null;
   onClose: () => void;
   onLogout: () => void;
-  onDesignSelect: (productId: string, uploadedImages: any) => void;
 }
 
 const UserProfile: React.FC<UserProfileProps> = ({
@@ -16,25 +16,28 @@ const UserProfile: React.FC<UserProfileProps> = ({
   user,
   onClose,
   onLogout,
-  onDesignSelect,
 }) => {
   return (
-    <BaseModal show={show} onClose={onClose}>
-      <h2>Profil uživatele</h2>
+    <BaseModal show={show} onClose={onClose} title="Profil uživatele">
       {user ? (
-        <>
-          <p>Email: {user.email}</p>
+        <div className="space-y-4">
+          <p className="text-lg">Email: <span className="font-semibold">{user.email}</span></p>
           {user.user_metadata && (
             <>
-              <p>Jméno: {user.user_metadata.full_name}</p>
-              <p>Telefon: {user.user_metadata.phone}</p>
+              <p className="text-lg">Jméno: <span className="font-semibold">{user.user_metadata.full_name}</span></p>
+              <p className="text-lg">Telefon: <span className="font-semibold">{user.user_metadata.phone}</span></p>
             </>
           )}
-          <button onClick={onLogout}>Odhlásit se</button>
-          <SavedDesigns user={user} onDesignSelect={onDesignSelect} />
-        </>
+          <button 
+            onClick={onLogout}
+            className="w-full py-2 px-4 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+          >
+            Odhlásit se
+          </button>
+          <SavedDesigns user={user} />
+        </div>
       ) : (
-        <p>Načítání...</p>
+        <p className="text-lg text-gray-600">Načítání...</p>
       )}
     </BaseModal>
   );

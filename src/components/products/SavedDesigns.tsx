@@ -1,3 +1,4 @@
+// src/components/products/SavedDesigns.tsx
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../utils/supabaseClient';
 import { User } from '@supabase/supabase-js';
@@ -5,7 +6,6 @@ import { useRouter } from 'next/router';
 
 interface SavedDesignsProps {
   user: User | null;
-  onDesignSelect: (productId: string, uploadedImages: any) => void;
 }
 
 const SavedDesigns: React.FC<SavedDesignsProps> = ({ user }) => {
@@ -44,21 +44,23 @@ const SavedDesigns: React.FC<SavedDesignsProps> = ({ user }) => {
   };
 
   return (
-    <div>
-      <h2>Uložené návrhy</h2>
+    <div className="mt-6">
+      <h2 className="text-xl font-semibold mb-4">Uložené návrhy</h2>
       {savedDesigns.length > 0 ? (
-        <ul>
+        <ul className="space-y-2">
           {savedDesigns.map((design) => (
             <li key={design.id}>
-              <button onClick={() => handleDesignSelect(design.product_id, design)}>
-                {/* Zobrazit název produktu nebo jiné informace */}
+              <button 
+                onClick={() => handleDesignSelect(design.product_id, design)}
+                className="w-full py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+              >
                 Návrh pro produkt {design.product_id}
               </button>
             </li>
           ))}
         </ul>
       ) : (
-        <p>Žádné uložené návrhy</p>
+        <p className="text-gray-600">Žádné uložené návrhy</p>
       )}
     </div>
   );

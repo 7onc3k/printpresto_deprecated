@@ -24,15 +24,15 @@ export default function App({ Component, pageProps }: AppProps) {
     };
   }, [setUser]);
 
-  // Zkontrolujte, zda se jedná o zaměstnaneckou stránku
+  // Kontrola, zda se jedná o zaměstnaneckou stránku
   const isEmployeePage = router.pathname.startsWith('/employee');
 
-  // Pokud se jedná o zaměstnaneckou stránku, nepoužívejte Layout
+  // Pro zaměstnanecké stránky nepoužívat Layout
   if (isEmployeePage) {
     return <Component {...pageProps} />;
   }
 
-  // Pro ostatní stránky použijte Layout
+  // Pro ostatní stránky použít Layout
   return (
     <Layout>
       <Component {...pageProps} />

@@ -4,7 +4,7 @@ import { useStore } from '../../store';
 import { useRouter } from 'next/router';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const user = useStore(state => state.user);
+  const { user } = useStore();
   const router = useRouter();
   const isDesignerPage = router.pathname.startsWith('/designer');
 

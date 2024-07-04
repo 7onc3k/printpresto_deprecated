@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useRouter } from 'next/router';
 import { supabase } from '../../utils/supabaseClient';
 
 const EmployeeLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,52 +21,45 @@ const EmployeeLogin = () => {
       if (error) throw error;
 
       if (data.user) {
-        const { error: updateError } = await supabase.auth.updateUser({
-          data: { is_employee: true }
-        });
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('is_employee')
+          .eq('id', data.user.id)
+          .single();
 
-        if (updateError) {
-          console.error('Error updating user metadata:', updateError);
-          setError('Error verifying employee');
+        if (userError) throw userError;
+
+        if (userData && userData.is_employee) {
+          router.push('/employee/dashboard');
         } else {
-          console.log('Employee login successful');
-          window.location.href = '/employee/dashboard';
+          setError('Přístup odepřen. Nejste zaměstnanec.');
+          await supabase.auth.signOut();
         }
       }
     } catch (err) {
       console.error('Error logging in:', err);
-      setError('Error logging in');
+      setError('Chyba při přihlašování');
     }
   };
 
   return (
-    <div style={{
-      backgroundColor: 'black',
-      color: 'white',
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}>
-      <h2>Employee Login</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+    <div>
+      <h2>Přihlášení zaměstnance</h2>
+      {error && <p>{error}</p>}
+      <form onSubmit={handleLogin}>
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          style={{ padding: '5px' }}
         />
         <input
           type="password"
-          placeholder="Password"
+          placeholder="Heslo"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          style={{ padding: '5px' }}
         />
-        <button type="submit" style={{ padding: '5px', backgroundColor: 'white', color: 'black' }}>Login</button>
+        <button type="submit">Přihlásit</button>
       </form>
     </div>
   );

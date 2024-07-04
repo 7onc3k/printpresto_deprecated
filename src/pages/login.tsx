@@ -1,25 +1,19 @@
 import React, { useState } from 'react';
-import { signIn } from '../services/authService';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { useStore } from '../store';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const router = useRouter();
+  const { signIn, error, isLoading } = useStore();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-  
-    try {
-      const { user } = await signIn(email, password);
-      if (user) {
-        router.push('/profile');
-      }
-    } catch (err) {
-      setError('Nesprávné přihlašovací údaje nebo nastala chyba při přihlašování.');
+    await signIn(email, password);
+    if (!error) {
+      router.push('/profile');
     }
   };
 
@@ -43,8 +37,12 @@ const Login: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
             className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
           />
-          <button type="submit" className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-            Přihlásit se
+          <button 
+            type="submit" 
+            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Přihlašování...' : 'Přihlásit se'}
           </button>
         </form>
         <p className="mt-2 text-center text-sm text-gray-600">

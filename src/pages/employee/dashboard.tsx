@@ -7,39 +7,27 @@ import CanvasComponent from '../../components/products/CanvasComponent';
 import useProductViews from '../../hooks/useProductViews';
 import { loadDesign } from '../../services/designService';
 import { fabric } from 'fabric';
+import AuthGuard from '../../components/auth/AuthGuard';
+import { useStore } from '../../store';
 
 const EmployeeDashboard: React.FC = () => {
   const router = useRouter();
+  const { user } = useStore();
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [uploadedImages, setUploadedImages] = useState<{ [key: string]: fabric.Image[] }>({ view_1: [], view_2: [], view_3: [], view_4: [] });
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
   const [currentView, setCurrentView] = useState('view_1');
-  const [isEmployeeVerified, setIsEmployeeVerified] = useState(false);
   const productViews = useProductViews(selectedProductId || undefined);
 
   useEffect(() => {
-    const checkEmployeeStatus = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      console.log('User data:', user);
-      if (!user) {
-        console.error('Uživatel není přihlášen');
-        router.push('/employee/login');
-        return;
-      }
-      if (!user.user_metadata.is_employee) {
-        console.error('Uživatel není zaměstnanec');
-        router.push('/');
-        return;
-      }
-      console.log('Uživatel je zaměstnanec, načítám objednávky');
-      setIsEmployeeVerified(true);
+    if (user && !user.user_metadata?.is_employee) {
+      router.push('/');
+    } else {
       fetchOrders();
-    };
-
-    checkEmployeeStatus();
-  }, [router]);
+    }
+  }, [user, router]);
 
   const fetchOrders = async () => {
     try {
@@ -94,67 +82,65 @@ const EmployeeDashboard: React.FC = () => {
     }
   };
 
-  if (!isEmployeeVerified) {
-    return <div>Ověřování...</div>;
-  }
-
   return (
-    <div>
-      <h2>Objednávky zákazníků</h2>
-      {orders.length > 0 ? (
-        <ul>
-          {orders.map((order) => (
-            <li key={order.id}>
-              <p>ID objednávky: {order.id}</p>
-              <p>Celková cena: {order.total_price}</p>
-              <button onClick={() => handleViewOrder(order)}>Zobrazit objednávku</button>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>Žádné objednávky nenalezeny</p>
-      )}
-      {selectedOrder && (
-        <div>
-          <h3>Náhled objednávky</h3>
+    <AuthGuard>
+      <div>
+        <h2>Objednávky zákazníků</h2>
+        {orders.length > 0 ? (
           <ul>
-            {orderItems.map((item) => (
-              <li key={item.id}>
-                <p>ID produktu: {item.product_id}</p>
-                <p>Množství: {item.quantity}</p>
-                <p>Cena: {item.price}</p>
-                <button onClick={() => handleViewOrderItem(item)}>Zobrazit návrh</button>
+            {orders.map((order) => (
+              <li key={order.id}>
+                <p>ID objednávky: {order.id}</p>
+                <p>Celková cena: {order.total_price}</p>
+                <button onClick={() => handleViewOrder(order)}>Zobrazit objednávku</button>
               </li>
             ))}
           </ul>
-          {selectedProductId && (
-            <div>
-              <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-                {Object.entries(productViews).map(([key, value]) =>
-                  value && (
-                    <Image key={key}
-                      src={value}
-                      alt={`Náhled ${key}`}
-                      width={100}
-                      height={100}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setCurrentView(key)}
-                    />
-                  )
-                )}
+        ) : (
+          <p>Žádné objednávky nenalezeny</p>
+        )}
+        {selectedOrder && (
+          <div>
+            <h3>Náhled objednávky</h3>
+            <ul>
+              {orderItems.map((item) => (
+                <li key={item.id}>
+                  <p>ID produktu: {item.product_id}</p>
+                  <p>Množství: {item.quantity}</p>
+                  <p>Cena: {item.price}</p>
+                  <button onClick={() => handleViewOrderItem(item)}>Zobrazit návrh</button>
+                </li>
+              ))}
+            </ul>
+            {selectedProductId && (
+              <div>
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+                  {Object.entries(productViews).map(([key, value]) =>
+                    value && (
+                      <Image key={key}
+                        src={value}
+                        alt={`Náhled ${key}`}
+                        width={100}
+                        height={100}
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => setCurrentView(key)}
+                      />
+                    )
+                  )}
+                </div>
+                <CanvasComponent
+                  uploadedImages={uploadedImages}
+                  currentView={currentView}
+                  productViews={productViews}
+                  setUploadedImages={setUploadedImages}
+                  readOnly={true}
+                />
               </div>
-              <CanvasComponent
-                uploadedImages={uploadedImages}
-                currentView={currentView}
-                productViews={productViews}
-                setUploadedImages={setUploadedImages}
-                readOnly={true}
-              />
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+            )}
+          </div>
+        )}
+      </div>
+    </AuthGuard>
   );
 };
 

@@ -6,9 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "unused": "next-unused"
   },
   "dependencies": {
+    "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/supabase-js": "^2.39.0",
     "fabric": "^5.3.0",
     "next": "14.0.3",
@@ -31,6 +33,7 @@
     "eslint": "^8",
     "eslint-config-next": "14.0.3",
     "jest": "^29.7.0",
+    "next-unused": "^0.0.6",
     "postcss": "^8",
     "tailwindcss": "^3.3.0",
     "typescript": "^5"

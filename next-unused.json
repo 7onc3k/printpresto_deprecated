@@ -1,0 +1,7 @@
+{
+    "rootDir": "src",
+    "entryFiles": [
+      "pages/**/*.{ts,tsx}",
+      "components/**/*.{ts,tsx}"
+    ]
+  }

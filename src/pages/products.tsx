@@ -6,8 +6,7 @@ import { supabase } from '../utils/supabaseClient';
 import { Product } from '../types/types';
 
 const Products: React.FC = () => {
-  const products = useStore((state) => state.products);
-  const setProducts = useStore((state) => state.setProducts);
+  const { products, setProducts } = useStore();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -22,31 +21,34 @@ const Products: React.FC = () => {
     fetchProducts();
   }, [setProducts]);
 
-  console.log('Products:', products); // Pro debugging
-
   if (products.length === 0) {
-    return <div>Načítání produktů...</div>;
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p className="text-xl">Načítání produktů...</p>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <h1>Naše Produkty</h1>
-      <div>
+    <div className="container mx-auto px-4">
+      <h1 className="text-3xl font-bold mb-8 text-center">Naše Produkty</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {products.map((product: Product) => (
-          <div key={product.id} style={{ margin: '10px' }}>
-            <Link href={`/designer/${product.id}`} passHref>
-              <div>
-                <Image 
-                  src={product.image_url} 
-                  alt={product.name} 
-                  width={100} 
-                  height={100} 
-                  style={{ objectFit: 'cover' }} 
-                />
-                <button>{product.name}</button>
+          <Link href={`/designer/${product.id}`} key={product.id} passHref>
+            <div className="border rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <Image 
+                src={product.image_url} 
+                alt={product.name} 
+                width={300} 
+                height={300} 
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-4">
+                <h2 className="text-xl font-semibold mb-2">{product.name}</h2>
+                <p className="text-gray-600">{product.price} Kč</p>
               </div>
-            </Link>
-          </div>
+            </div>
+          </Link>
         ))}
       </div>
     </div>

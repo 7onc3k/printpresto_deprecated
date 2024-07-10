@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { fabric } from 'fabric';
+import { StaticImageData } from 'next/image';
 import CanvasSetup from './CanvasSetup';
 import ImageUploader from './ImageUploader';
 import ImageManager from './ImageManager';
@@ -7,7 +8,7 @@ import ImageManager from './ImageManager';
 interface CanvasComponentProps {
   uploadedImages: { [key: string]: fabric.Image[] };
   currentView: string;
-  productViews: { [key: string]: string };
+  productViews: { [key: string]: string | StaticImageData };
   setUploadedImages: React.Dispatch<React.SetStateAction<{ [key: string]: fabric.Image[] }>>;
   readOnly: boolean;
 }

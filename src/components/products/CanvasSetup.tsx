@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { fabric } from 'fabric';
+import { StaticImageData } from 'next/image';
 
 interface CanvasSetupProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
   currentView: string;
-  productViews: { [key: string]: string };
+  productViews: { [key: string]: string | StaticImageData };
   uploadedImages: { [key: string]: fabric.Image[] };
   readOnly: boolean;
 }
@@ -30,22 +31,26 @@ const CanvasSetup: React.FC<CanvasSetupProps> = ({
       const imageUrl = productViews[currentView];
       canvas.clear();
 
-      fabric.Image.fromURL(imageUrl, (imgObj) => {
-        if (imgObj) {
-          imgObj.selectable = false;
-          canvas.add(imgObj);
-          canvas.sendToBack(imgObj);
+      if (typeof imageUrl === 'string') {
+        fabric.Image.fromURL(imageUrl, (imgObj) => {
+          if (imgObj) {
+            imgObj.selectable = false;
+            canvas.add(imgObj);
+            canvas.sendToBack(imgObj);
 
-          const maxSize = 256;
-          const scale = Math.min(maxSize / imgObj.width!, maxSize / imgObj.height!);
-          imgObj.scale(scale);
+            const maxSize = 256;
+            const scale = Math.min(maxSize / imgObj.width!, maxSize / imgObj.height!);
+            imgObj.scale(scale);
 
-          canvas.setDimensions({ width: maxSize, height: maxSize });
+            canvas.setDimensions({ width: maxSize, height: maxSize });
 
-          imgObj.setCoords();
-          canvas.renderAll();
-        }
-      });
+            imgObj.setCoords();
+            canvas.renderAll();
+          }
+        });
+      } else {
+        console.error('Unsupported image type for', currentView);
+      }
 
       if (uploadedImages[currentView]) {
         uploadedImages[currentView].forEach(img => {

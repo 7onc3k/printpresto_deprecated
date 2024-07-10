@@ -1,8 +1,12 @@
 import os
+import pyperclip
 
-def extract_content(root_dir, output_file, extensions):
+def extract_content(root_dir, extensions):
     content = []
     for root, dirs, files in os.walk(root_dir):
+        # Přidáno filtrování složek a podložek
+        if not any(root.startswith(os.path.join(root_dir, d)) for d in ['src']):
+            continue
         for file in files:
             if any(file.endswith(ext) for ext in extensions):
                 file_path = os.path.join(root, file)
@@ -17,13 +21,20 @@ def extract_content(root_dir, output_file, extensions):
                 
                 content.append("\n" + "=" * 50 + "\n")
     
-    with open(output_file, 'w', encoding='utf-8') as out_file:
-        out_file.write("\n".join(content))
+    return "\n".join(content)
 
-if __name__ == "__main__":
+if __name__ == "__main__": 
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    output_file = os.path.join(current_dir, "extracted_content.txt")
     extensions = ['.tsx', '.js', '.ts', '.css']
+    output_file = "extracted_content.txt"
     
-    extract_content(current_dir, output_file, extensions)
-    print(f"Extrakce dokončena. Obsah byl uložen do souboru: {output_file}")
+    extracted_content = extract_content(current_dir, extensions)
+    
+    # Uložení do souboru
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.write(extracted_content)
+    
+    # Kopírování do schránky
+    pyperclip.copy(extracted_content)
+    
+    print(f"Extrakce dokončena. Obsah byl uložen do souboru {output_file} a zkopírován do schránky.")

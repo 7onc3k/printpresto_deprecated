@@ -1,13 +1,20 @@
 import { useStore } from '../../store';
 import { supabase } from '../../utils/supabaseClient';
-import { Order } from '../../types/types';
-import { updateCart } from './cartStore';
+import { CartItem, Order } from '../../types/types';
+
+export const loadCartFromLocalStorage = () => {
+  const savedCartItems = localStorage.getItem('cartItems');
+  if (savedCartItems) {
+    const parsedCartItems = JSON.parse(savedCartItems);
+    useStore.setState({ cart: parsedCartItems });
+  }
+};
 
 export const handleQuantityChange = (index: number, quantity: number) => {
   useStore.setState((state) => {
     const updatedCart = [...state.cart];
     updatedCart[index].quantity = quantity;
-    updateCart(updatedCart);
+    localStorage.setItem('cartItems', JSON.stringify(updatedCart));
     return { cart: updatedCart };
   });
 };
@@ -16,7 +23,7 @@ export const handleSizeChange = (index: number, size: 'S' | 'M' | 'L' | 'XL') =>
   useStore.setState((state) => {
     const updatedCart = [...state.cart];
     updatedCart[index].size = size;
-    updateCart(updatedCart);
+    localStorage.setItem('cartItems', JSON.stringify(updatedCart));
     return { cart: updatedCart };
   });
 };
@@ -60,13 +67,5 @@ export const handleCheckout = async () => {
     localStorage.removeItem('cartItems');
   } catch (error) {
     console.error('Chyba při vytváření objednávky:', error);
-  }
-};
-
-export const loadCartFromLocalStorage = () => {
-  const savedCartItems = localStorage.getItem('cartItems');
-  if (savedCartItems) {
-    const parsedCartItems = JSON.parse(savedCartItems);
-    useStore.setState({ cart: parsedCartItems });
   }
 };

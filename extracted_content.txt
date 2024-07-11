@@ -81,6 +81,112 @@ input {
 
 ==================================================
 
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\OrderDetails.tsx
+==================================================
+import React from 'react';
+import { Order, OrderItem } from '../types/types';
+import Image from 'next/image';
+import CanvasComponent from './products/CanvasComponent';
+
+interface OrderDetailsProps {
+  order: Order;
+  orderItems: OrderItem[];
+  productViews: { [key: string]: string };
+  uploadedImages: { [key: string]: fabric.Image[] };
+  currentView: string;
+  setCurrentView: (view: string) => void;
+  onViewOrderItem: (item: OrderItem) => void;
+}
+
+const OrderDetails: React.FC<OrderDetailsProps> = ({
+  order,
+  orderItems,
+  productViews,
+  uploadedImages,
+  currentView,
+  setCurrentView,
+  onViewOrderItem,
+}) => (
+  <div>
+    <h3>Náhled objednávky</h3>
+    <ul>
+      {orderItems.map((item) => (
+        <li key={item.id}>
+          <p>ID produktu: {item.product_id}</p>
+          <p>Množství: {item.quantity}</p>
+          <p>Cena: {item.price}</p>
+          <button onClick={() => onViewOrderItem(item)}>Zobrazit návrh</button>
+        </li>
+      ))}
+    </ul>
+    {order && (
+      <div>
+        <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+          {Object.entries(productViews).map(([key, value]) =>
+            value && (
+              <Image
+                key={key}
+                src={value}
+                alt="Náhled"
+                width={100}
+                height={100}
+                style={{ cursor: 'pointer' }}
+                onClick={() => setCurrentView(key)}
+              />
+            )
+          )}
+        </div>
+        <CanvasComponent
+          uploadedImages={uploadedImages}
+          currentView={currentView}
+          productViews={productViews}
+          setUploadedImages={() => {}}
+          readOnly={true}
+        />
+      </div>
+    )}
+  </div>
+);
+
+export default OrderDetails;
+
+
+==================================================
+
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\OrdersList.tsx
+==================================================
+import React from 'react';
+import { Order } from '../types/types';
+
+interface OrdersListProps {
+  orders: Order[];
+  onViewOrder: (order: Order) => void;
+}
+
+const OrdersList: React.FC<OrdersListProps> = ({ orders, onViewOrder }) => (
+  <div>
+    <h2>Objednávky zákazníků</h2>
+    {orders.length > 0 ? (
+      <ul>
+        {orders.map((order) => (
+          <li key={order.id}>
+            <p>ID objednávky: {order.id}</p>
+            <p>Celková cena: {order.total_price}</p>
+            <button onClick={() => onViewOrder(order)}>Zobrazit objednávku</button>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p>Žádné objednávky nenalezeny</p>
+    )}
+  </div>
+);
+
+export default OrdersList;
+
+
+==================================================
+
 Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\auth\AuthGuard.tsx
 ==================================================
 import React, { useEffect } from 'react';
@@ -113,6 +219,35 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
 };
 
 export default AuthGuard;
+
+==================================================
+
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\auth\AuthProvider.tsx
+==================================================
+import React, { useEffect } from 'react';
+import { useStore } from '../../store';
+import { supabase } from '../../utils/supabaseClient';
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { setUser } = useStore();
+
+  useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN') {
+        setUser(session?.user ?? null);
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+      }
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, [setUser]);
+
+  return <>{children}</>;
+};
+
 
 ==================================================
 
@@ -289,6 +424,36 @@ export interface ViewFiles {
 
 ==================================================
 
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\employee\OrdersList.tsx
+==================================================
+import React from 'react';
+import { Order } from '../../types/types';
+
+interface OrdersListProps {
+  orders: Order[];
+  onViewOrder: (order: Order) => void;
+}
+
+const OrdersList: React.FC<OrdersListProps> = ({ orders, onViewOrder }) => (
+  <div>
+    <h2>Seznam objednávek</h2>
+    <ul>
+      {orders.map((order) => (
+        <li key={order.id}>
+          <span>ID objednávky: {order.id}</span>
+          <span>Celková cena: {order.total_price}</span>
+          <button onClick={() => onViewOrder(order)}>Zobrazit detail</button>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
+export default OrdersList;
+
+
+==================================================
+
 Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\layout\Layout.tsx
 ==================================================
 import React from 'react';
@@ -438,15 +603,15 @@ Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\comp
 ==================================================
 import React, { useEffect, useState } from 'react';
 import { fabric } from 'fabric';
+import { StaticImageData } from 'next/image';
 
 interface CanvasSetupProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
   currentView: string;
-  productViews: { [key: string]: string };
+  productViews: { [key: string]: string | StaticImageData };
   uploadedImages: { [key: string]: fabric.Image[] };
   readOnly: boolean;
 }
-
 
 const CanvasSetup: React.FC<CanvasSetupProps> = ({
   canvasRef,
@@ -469,22 +634,26 @@ const CanvasSetup: React.FC<CanvasSetupProps> = ({
       const imageUrl = productViews[currentView];
       canvas.clear();
 
-      fabric.Image.fromURL(imageUrl, (imgObj) => {
-        if (imgObj) {
-          imgObj.selectable = false;
-          canvas.add(imgObj);
-          canvas.sendToBack(imgObj);
+      if (typeof imageUrl === 'string') {
+        fabric.Image.fromURL(imageUrl, (imgObj) => {
+          if (imgObj) {
+            imgObj.selectable = false;
+            canvas.add(imgObj);
+            canvas.sendToBack(imgObj);
 
-          const maxSize = 256;
-          const scale = Math.min(maxSize / imgObj.width!, maxSize / imgObj.height!);
-          imgObj.scale(scale);
+            const maxSize = 256;
+            const scale = Math.min(maxSize / imgObj.width!, maxSize / imgObj.height!);
+            imgObj.scale(scale);
 
-          canvas.setDimensions({ width: maxSize, height: maxSize });
+            canvas.setDimensions({ width: maxSize, height: maxSize });
 
-          imgObj.setCoords();
-          canvas.renderAll();
-        }
-      });
+            imgObj.setCoords();
+            canvas.renderAll();
+          }
+        });
+      } else {
+        console.error('Unsupported image type for', currentView);
+      }
 
       if (uploadedImages[currentView]) {
         uploadedImages[currentView].forEach(img => {
@@ -773,131 +942,38 @@ export default SavedDesigns;
 
 ==================================================
 
-Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\features\cart\cart.tsx
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\features\cart\Cart.tsx
 ==================================================
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect } from 'react';
 import { useStore } from '../../store';
-import { supabase } from '../../utils/supabaseClient';
-import { CartItem, Order } from '../../types/types';
+import { loadCartFromLocalStorage, handleQuantityChange, handleSizeChange, handleCheckout } from './cartService';
+import CartItem from './CartItem';
+import CheckoutButton from './CheckoutButton';
 
 const Cart: React.FC = () => {
-  const { cart, user, removeFromCart, clearCart } = useStore();
+  const { cart, removeFromCart } = useStore();
 
   useEffect(() => {
-    const savedCartItems = localStorage.getItem('cartItems');
-    if (savedCartItems) {
-      const parsedCartItems = JSON.parse(savedCartItems);
-      useStore.setState({ cart: parsedCartItems });
-    }
+    loadCartFromLocalStorage();
   }, []);
-
-  const handleQuantityChange = useCallback((index: number, quantity: number) => {
-    useStore.setState((state) => {
-      const updatedCart = [...state.cart];
-      updatedCart[index].quantity = quantity;
-      localStorage.setItem('cartItems', JSON.stringify(updatedCart));
-      return { cart: updatedCart };
-    });
-  }, []);
-
-  const handleSizeChange = useCallback((index: number, size: 'S' | 'M' | 'L' | 'XL') => {
-    useStore.setState((state) => {
-      const updatedCart = [...state.cart];
-      updatedCart[index].size = size;
-      localStorage.setItem('cartItems', JSON.stringify(updatedCart));
-      return { cart: updatedCart };
-    });
-  }, []);
-
-  const handleCheckout = useCallback(async () => {
-    if (!user) {
-      console.error('Uživatel není přihlášen');
-      return;
-    }
-
-    const total_price = cart.reduce((total, item) => total + item.price * item.quantity, 0);
-
-    try {
-      const { data: order, error: orderError } = await supabase
-        .from('orders')
-        .insert({ user_id: user.id, total_price })
-        .select()
-        .single();
-
-      if (orderError) throw orderError;
-
-      const orderItems = cart.map(item => ({
-        order_id: (order as Order).id,
-        product_id: item.productId,
-        quantity: item.quantity,
-        price: item.price,
-        design_id: item.designId,
-      }));
-
-      const { error: orderItemsError } = await supabase
-        .from('order_items')
-        .insert(orderItems);
-
-      if (orderItemsError) throw orderItemsError;
-
-      console.log('Objednávka byla úspěšně vytvořena');
-      
-      clearCart();
-      localStorage.removeItem('cartItems');
-    } catch (error) {
-      console.error('Chyba při vytváření objednávky:', error);
-    }
-  }, [cart, user, clearCart]);
 
   return (
-    <div className="container mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Košík</h2>
+    <div>
       {cart.length > 0 ? (
         <>
           <ul className="space-y-4">
-            {cart.map((item: CartItem, index: number) => (
-              <li key={index} className="border p-4 rounded">
-                <p>Produkt ID: {item.productId}</p>
-                <p>Design ID: {item.designId}</p>
-                <label className="block mb-2">
-                  Velikost:
-                  <select 
-                    value={item.size} 
-                    onChange={(e) => handleSizeChange(index, e.target.value as 'S' | 'M' | 'L' | 'XL')}
-                    className="ml-2 border rounded"
-                  >
-                    <option value="S">S</option>
-                    <option value="M">M</option>
-                    <option value="L">L</option>
-                    <option value="XL">XL</option>
-                  </select>
-                </label>
-                <label className="block mb-2">
-                  Počet:
-                  <input
-                    type="number"
-                    value={item.quantity}
-                    onChange={(e) => handleQuantityChange(index, parseInt(e.target.value))}
-                    min="1"
-                    className="ml-2 border rounded w-16 text-center"
-                  />
-                </label>
-                <p>Cena: {item.price} Kč</p>
-                <button 
-                  onClick={() => removeFromCart(item.productId)}
-                  className="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors"
-                >
-                  Odstranit
-                </button>
-              </li>
+            {cart.map((item, index) => (
+              <CartItem 
+                key={index} 
+                item={item} 
+                index={index}
+                onQuantityChange={handleQuantityChange}
+                onSizeChange={handleSizeChange}
+                onRemove={removeFromCart}
+              />
             ))}
           </ul>
-          <button 
-            onClick={handleCheckout}
-            className="mt-4 bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 transition-colors"
-          >
-            Dokončit nákup
-          </button>
+          <CheckoutButton onCheckout={handleCheckout} />
         </>
       ) : (
         <p>Košík je prázdný</p>
@@ -907,6 +983,303 @@ const Cart: React.FC = () => {
 };
 
 export default Cart;
+
+==================================================
+
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\features\cart\CartItem.tsx
+==================================================
+import React from 'react';
+import { CartItem as CartItemType } from '../../types/types';
+
+interface CartItemProps {
+  item: CartItemType;
+  index: number;
+  onQuantityChange: (index: number, quantity: number) => void;
+  onSizeChange: (index: number, size: 'S' | 'M' | 'L' | 'XL') => void;
+  onRemove: (productId: string) => void;
+}
+
+const CartItem: React.FC<CartItemProps> = ({ item, index, onQuantityChange, onSizeChange, onRemove }) => {
+  return (
+    <li className="border p-4 rounded">
+      <p>Produkt ID: {item.productId}</p>
+      <p>Design ID: {item.designId}</p>
+      <label className="block mb-2">
+        Velikost:
+        <select 
+          value={item.size} 
+          onChange={(e) => onSizeChange(index, e.target.value as 'S' | 'M' | 'L' | 'XL')}
+          className="ml-2 border rounded"
+        >
+          <option value="S">S</option>
+          <option value="M">M</option>
+          <option value="L">L</option>
+          <option value="XL">XL</option>
+        </select>
+      </label>
+      <label className="block mb-2">
+        Počet:
+        <input
+          type="number"
+          value={item.quantity}
+          onChange={(e) => onQuantityChange(index, parseInt(e.target.value))}
+          min="1"
+          className="ml-2 border rounded w-16 text-center"
+        />
+      </label>
+      <p>Cena: {item.price} Kč</p>
+      <button 
+        onClick={() => onRemove(item.productId)}
+        className="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors"
+      >
+        Odstranit
+      </button>
+    </li>
+  );
+};
+
+export default CartItem;
+
+==================================================
+
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\features\cart\cartService.ts
+==================================================
+import { useStore } from '../../store';
+import { supabase } from '../../utils/supabaseClient';
+import { CartItem, Order } from '../../types/types';
+
+export const loadCartFromLocalStorage = () => {
+  const savedCartItems = localStorage.getItem('cartItems');
+  if (savedCartItems) {
+    const parsedCartItems = JSON.parse(savedCartItems);
+    useStore.setState({ cart: parsedCartItems });
+  }
+};
+
+export const handleQuantityChange = (index: number, quantity: number) => {
+  useStore.setState((state) => {
+    const updatedCart = [...state.cart];
+    updatedCart[index].quantity = quantity;
+    localStorage.setItem('cartItems', JSON.stringify(updatedCart));
+    return { cart: updatedCart };
+  });
+};
+
+export const handleSizeChange = (index: number, size: 'S' | 'M' | 'L' | 'XL') => {
+  useStore.setState((state) => {
+    const updatedCart = [...state.cart];
+    updatedCart[index].size = size;
+    localStorage.setItem('cartItems', JSON.stringify(updatedCart));
+    return { cart: updatedCart };
+  });
+};
+
+export const handleCheckout = async () => {
+  const { cart, user, clearCart } = useStore.getState();
+
+  if (!user) {
+    console.error('Uživatel není přihlášen');
+    return;
+  }
+
+  const total_price = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+
+  try {
+    const { data: order, error: orderError } = await supabase
+      .from('orders')
+      .insert({ user_id: user.id, total_price })
+      .select()
+      .single();
+
+    if (orderError) throw orderError;
+
+    const orderItems = cart.map(item => ({
+      order_id: (order as Order).id,
+      product_id: item.productId,
+      quantity: item.quantity,
+      price: item.price,
+      design_id: item.designId,
+    }));
+
+    const { error: orderItemsError } = await supabase
+      .from('order_items')
+      .insert(orderItems);
+
+    if (orderItemsError) throw orderItemsError;
+
+    console.log('Objednávka byla úspěšně vytvořena');
+    
+    clearCart();
+    localStorage.removeItem('cartItems');
+  } catch (error) {
+    console.error('Chyba při vytváření objednávky:', error);
+  }
+};
+
+==================================================
+
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\features\cart\cartStore.ts
+==================================================
+import { useStore } from '../../store';
+import { CartItem } from '../../types/types';
+
+export const updateCart = (updatedCart: CartItem[]) => {
+  useStore.setState({ cart: updatedCart });
+  localStorage.setItem('cartItems', JSON.stringify(updatedCart));
+};
+
+export const loadCartFromLocalStorage = () => {
+  const savedCartItems = localStorage.getItem('cartItems');
+  if (savedCartItems) {
+    const parsedCartItems = JSON.parse(savedCartItems);
+    useStore.setState({ cart: parsedCartItems });
+  }
+};
+
+==================================================
+
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\features\cart\CheckoutButton.tsx
+==================================================
+import React from 'react';
+
+interface CheckoutButtonProps {
+  onCheckout: () => Promise<void>;
+}
+
+const CheckoutButton: React.FC<CheckoutButtonProps> = ({ onCheckout }) => {
+  return (
+    <button 
+      onClick={onCheckout}
+      className="mt-4 bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 transition-colors"
+    >
+      Dokončit nákup
+    </button>
+  );
+};
+
+export default CheckoutButton;
+
+==================================================
+
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useDesign.ts
+==================================================
+import { useState } from 'react';
+import { fabric } from 'fabric';
+import { loadDesign } from '../services/designService';
+import { fetchDesign } from '../services/orderService';
+import { OrderItem } from '../types/types';
+
+export const useDesign = () => {
+  const [uploadedImages, setUploadedImages] = useState<{ [key: string]: fabric.Image[] }>({ view_1: [], view_2: [], view_3: [], view_4: [] });
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+
+  const handleViewOrderItem = async (item: OrderItem) => {
+    setSelectedProductId(item.product_id);
+    if (item.design_id) {
+      try {
+        const design = await fetchDesign(item.design_id);
+        if (design) {
+          const loadedImages = await loadDesign(item.product_id, design);
+          if (loadedImages) {
+            setUploadedImages(loadedImages);
+          }
+        }
+      } catch (error) {
+        console.error('Chyba při načítání designu:', error);
+      }
+    }
+  };
+
+  return { uploadedImages, selectedProductId, handleViewOrderItem };
+};
+
+
+==================================================
+
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useImageUpload.ts
+==================================================
+import { useState } from 'react';
+import { supabase } from '../utils/supabaseClient';
+
+export const useImageUpload = () => {
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [viewFiles, setViewFiles] = useState<any>({});
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setImageFile(e.target.files[0]);
+    }
+  };
+
+  const handleViewImageChange = (e: React.ChangeEvent<HTMLInputElement>, view: string) => {
+    if (e.target.files && e.target.files[0]) {
+      setViewFiles({ ...viewFiles, [view]: e.target.files[0] });
+    }
+  };
+
+  const uploadImage = async (file: File) => {
+    const fileName = `${Date.now()}_${file.name}`;
+    const { data: uploadData, error: uploadError } = await supabase.storage.from('products').upload(fileName, file);
+    if (uploadError) {
+      console.error('Chyba při nahrávání obrázku:', uploadError);
+      return null;
+    }
+    const { data: urlData } = await supabase.storage.from('products').getPublicUrl(fileName);
+    if (!urlData) {
+      console.error('Chyba při získávání veřejného URL');
+      return null;
+    }
+    return urlData.publicUrl;
+  };
+
+  const uploadViewImage = async (file: File, view: string) => {
+    const fileName = `${Date.now()}_${view}_${file.name}`;
+    const { data: uploadData, error: uploadError } = await supabase.storage.from('product_views').upload(fileName, file);
+    if (uploadError) {
+      console.error(`Chyba při nahrávání obrázku pro ${view}:`, uploadError);
+      return null;
+    }
+    const { data: urlData } = await supabase.storage.from('product_views').getPublicUrl(fileName);
+    if (!urlData) {
+      console.error(`Chyba při získávání veřejného URL pro ${view}`);
+      return null;
+    }
+    return urlData.publicUrl;
+  };
+
+  return { imageFile, viewFiles, handleImageChange, handleViewImageChange, uploadImage, uploadViewImage };
+};
+
+==================================================
+
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useOrders.ts
+==================================================
+import { useState, useEffect } from 'react';
+import { Order, OrderItem } from '../types/types';
+import { fetchOrders, fetchOrderItems } from '../services/orderService';
+
+export const useOrders = () => {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
+
+  useEffect(() => {
+    fetchOrders().then(setOrders).catch(console.error);
+  }, []);
+
+  const handleViewOrder = async (order: Order) => {
+    setSelectedOrder(order);
+    try {
+      const items = await fetchOrderItems(order.id);
+      setOrderItems(items);
+    } catch (error) {
+      console.error('Chyba při načítání položek objednávky:', error);
+    }
+  };
+
+  return { orders, selectedOrder, orderItems, handleViewOrder };
+};
+
 
 ==================================================
 
@@ -972,6 +1345,89 @@ export const useProductDesigner = () => {
     handleSaveDesign,
     addToCartHandler,
   };
+};
+
+==================================================
+
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useProducts.ts
+==================================================
+import { useState, useEffect } from 'react';
+import { supabase } from '../utils/supabaseClient';
+import { Product } from '../components/EditProducts/types';
+
+export const useProducts = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    const { data, error } = await supabase.from('products').select('*');
+    if (error) {
+      console.error('Chyba při načítání produktů:', error);
+    } else {
+      setProducts(data);
+    }
+  };
+
+  return { products, setProducts, fetchProducts };
+};
+
+==================================================
+
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useProductState.ts
+==================================================
+import { useState } from 'react';
+import { supabase } from '../utils/supabaseClient';
+import { Product } from '../components/EditProducts/types';
+import { useImageUpload } from './useImageUpload';
+
+export const useProductState = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [newProduct, setNewProduct] = useState<Partial<Product>>({});
+
+  const { uploadImage, uploadViewImage } = useImageUpload();
+
+  const addProduct = async (product: Partial<Product>, imageFile: File | null, viewFiles: any) => {
+    let imageUrl: string = '';
+    if (imageFile) {
+      const uploadedImageUrl = await uploadImage(imageFile);
+      if (uploadedImageUrl) {
+        imageUrl = uploadedImageUrl;
+      }
+    }
+
+    const viewUrls: { [key: string]: string } = {};
+    for (const view in viewFiles) {
+      if (viewFiles[view]) {
+        const uploadedViewUrl = await uploadViewImage(viewFiles[view]!, view);
+        if (uploadedViewUrl) {
+          viewUrls[view] = uploadedViewUrl;
+        }
+      }
+    }
+
+    const productToAdd = { ...product, image_url: imageUrl, ...viewUrls };
+    const { data, error } = await supabase.from('products').insert([productToAdd]).select();
+    if (error) {
+      console.error('Chyba při přidávání produktu:', error);
+    } else {
+      setProducts([...products, data[0]]);
+      setNewProduct({});
+    }
+  };
+
+  const updateProduct = async (id: string, updatedProduct: Partial<Product>) => {
+    const { data, error } = await supabase.from('products').update(updatedProduct).eq('id', id).select();
+    if (error) {
+      console.error('Chyba při aktualizaci produktu:', error);
+    } else {
+      setProducts(products.map(product => (product.id === id ? data[0] : product)));
+    }
+  };
+
+  return { products, newProduct, setNewProduct, addProduct, updateProduct };
 };
 
 ==================================================
@@ -1048,257 +1504,45 @@ export default useUser;
 
 Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\pages\cart.tsx
 ==================================================
-import React, { useEffect } from 'react';
-import { useStore } from '../store';
-import { supabase } from '../utils/supabaseClient';
-import { CartItem, Order } from '../types/types';
+import React from 'react';
+import Cart from '../features/cart/cart';
 
-const Cart: React.FC = () => {
-  const { cart, user, removeFromCart } = useStore();
-
-  useEffect(() => {
-    const savedCartItems = localStorage.getItem('cartItems');
-    if (savedCartItems) {
-      const parsedCartItems = JSON.parse(savedCartItems);
-      useStore.setState({ cart: parsedCartItems });
-    }
-  }, []);
-
-  const handleQuantityChange = (index: number, quantity: number) => {
-    const updatedCart = [...cart];
-    updatedCart[index].quantity = quantity;
-    useStore.setState({ cart: updatedCart });
-    localStorage.setItem('cartItems', JSON.stringify(updatedCart));
-  };
-
-  const handleSizeChange = (index: number, size: string) => {
-    const updatedCart = [...cart];
-    updatedCart[index].size = size;
-    useStore.setState({ cart: updatedCart });
-    localStorage.setItem('cartItems', JSON.stringify(updatedCart));
-  };
-
-  const handleCheckout = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      console.error('Uživatel není přihlášen');
-      return;
-    }
-
-    const total_price = cart.reduce((total, item) => total + item.price * item.quantity, 0);
-
-    try {
-      const { data: order, error: orderError } = await supabase
-        .from('orders')
-        .insert({ user_id: user.id, total_price })
-        .select()
-        .single();
-
-      if (orderError) throw orderError;
-
-      const orderItems = cart.map(item => ({
-        order_id: (order as Order).id,
-        product_id: item.productId,
-        quantity: item.quantity,
-        price: item.price,
-        design_id: item.designId,
-      }));
-
-      const { error: orderItemsError } = await supabase
-        .from('order_items')
-        .insert(orderItems);
-
-      if (orderItemsError) throw orderItemsError;
-
-      console.log('Objednávka byla úspěšně vytvořena');
-      
-      // Vyčištění košíku po úspěšné objednávce
-      useStore.setState({ cart: [] });
-      localStorage.removeItem('cartItems');
-    } catch (error) {
-      console.error('Chyba při vytváření objednávky:', error);
-    }
-  };
-
+const CartPage: React.FC = () => {
   return (
-    <div>
-      <h2>Košík</h2>
-      {cart.length > 0 ? (
-        <>
-          <ul>
-            {cart.map((item: CartItem, index: number) => (
-              <li key={index}>
-                <p>Produkt ID: {item.productId}</p>
-                <p>Design ID: {item.designId}</p>
-                <label>
-                  Velikost:
-                  <select 
-                    value={item.size} 
-                    onChange={(e) => handleSizeChange(index, e.target.value)}
-                  >
-                    <option value="S">S</option>
-                    <option value="M">M</option>
-                    <option value="L">L</option>
-                    <option value="XL">XL</option>
-                  </select>
-                </label>
-                <label>
-                  Počet:
-                  <input
-                    type="number"
-                    value={item.quantity}
-                    onChange={(e) => handleQuantityChange(index, parseInt(e.target.value))}
-                    min="1"
-                  />
-                </label>
-                <p>Cena: {item.price}</p>
-                <button onClick={() => removeFromCart(item.productId)}>Odstranit</button>
-              </li>
-            ))}
-          </ul>
-          <button onClick={handleCheckout}>Dokončit nákup</button>
-        </>
-      ) : (
-        <p>Košík je prázdný</p>
-      )}
+    <div className="container mx-auto p-4">
+      <h2 className="text-2xl font-bold mb-4">Košík</h2>
+      <Cart />
     </div>
   );
 };
 
-export default Cart;
+export default CartPage;
 
 ==================================================
 
 Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\pages\editproducts.tsx
 ==================================================
-import React, { useState, useEffect } from 'react';
-import { supabase } from '../utils/supabaseClient';
-import { Product, ViewFiles } from '../components/EditProducts/types';
+import React from 'react';
+import { useProductState } from '../hooks/useProductState';
+import { useImageUpload } from '../hooks/useImageUpload';
 import AddProductForm from '../components/EditProducts/AddProductForm';
 import ProductList from '../components/EditProducts/ProductList';
 
 const EditProducts: React.FC = () => {
-  const [newProduct, setNewProduct] = useState<Partial<Product>>({});
-  const [products, setProducts] = useState<Product[]>([]);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [viewFiles, setViewFiles] = useState<ViewFiles>({
-    view_1: null,
-    view_2: null,
-    view_3: null,
-    view_4: null,
-  });
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const fetchProducts = async () => {
-    const { data, error } = await supabase.from('products').select('*');
-    if (error) {
-      console.error('Chyba při načítání produktů:', error);
-    } else {
-      setProducts(data);
-    }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof Product) => {
-    const value = field === 'price' ? parseFloat(e.target.value) : e.target.value;
-    setNewProduct({ ...newProduct, [field]: value });
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setImageFile(e.target.files[0]);
-    }
-  };
-
-  const handleViewImageChange = (e: React.ChangeEvent<HTMLInputElement>, view: string) => {
-    if (e.target.files && e.target.files[0]) {
-      setViewFiles({ ...viewFiles, [view]: e.target.files[0] });
-    }
-  };
-
-  const uploadImage = async (file: File) => {
-    const fileName = `${Date.now()}_${file.name}`;
-    const { data: uploadData, error: uploadError } = await supabase.storage.from('products').upload(fileName, file);
-    if (uploadError) {
-      console.error('Chyba při nahrávání obrázku:', uploadError);
-      return null;
-    }
-    const { data: urlData } = await supabase.storage.from('products').getPublicUrl(fileName);
-    if (!urlData) {
-      console.error('Chyba při získávání veřejného URL');
-      return null;
-    }
-    return urlData.publicUrl;
-  };
-
-  const uploadViewImage = async (file: File, view: string) => {
-    const fileName = `${Date.now()}_${view}_${file.name}`;
-    const { data: uploadData, error: uploadError } = await supabase.storage.from('product_views').upload(fileName, file);
-    if (uploadError) {
-      console.error(`Chyba při nahrávání obrázku pro ${view}:`, uploadError);
-      return null;
-    }
-    const { data: urlData } = await supabase.storage.from('product_views').getPublicUrl(fileName);
-    if (!urlData) {
-      console.error(`Chyba při získávání veřejného URL pro ${view}`);
-      return null;
-    }
-    return urlData.publicUrl;
-  };
-
-  const handleAddProduct = async () => {
-    let imageUrl: string = '';
-    if (imageFile) {
-      const uploadedImageUrl = await uploadImage(imageFile);
-      if (uploadedImageUrl) {
-        imageUrl = uploadedImageUrl;
-      }
-    }
-
-    const viewUrls: { [key: string]: string } = {};
-    for (const view in viewFiles) {
-      if (viewFiles[view]) {
-        const uploadedViewUrl = await uploadViewImage(viewFiles[view]!, view);
-        if (uploadedViewUrl) {
-          viewUrls[view] = uploadedViewUrl;
-        }
-      }
-    }
-
-    const productToAdd = { ...newProduct, image_url: imageUrl, ...viewUrls };
-    const { data, error } = await supabase.from('products').insert([productToAdd]).select();
-    if (error) {
-      console.error('Chyba při přidávání produktu:', error);
-    } else {
-      setProducts([...products, data[0]]);
-      setNewProduct({});
-      setImageFile(null);
-      setViewFiles({ view_1: null, view_2: null, view_3: null, view_4: null });
-    }
-  };
-
-  const handleUpdateProduct = async (id: string, updatedProduct: Partial<Product>) => {
-    const { data, error } = await supabase.from('products').update(updatedProduct).eq('id', id).select();
-    if (error) {
-      console.error('Chyba při aktualizaci produktu:', error);
-    } else {
-      setProducts(products.map(product => (product.id === id ? data[0] : product)));
-    }
-  };
+  const { products, newProduct, setNewProduct, addProduct, updateProduct } = useProductState();
+  const { imageFile, viewFiles, handleImageChange, handleViewImageChange } = useImageUpload();
 
   return (
     <div>
       <h1>Upravit Produkty</h1>
       <AddProductForm
         newProduct={newProduct}
-        onInputChange={handleInputChange}
+        onInputChange={(e, field) => setNewProduct({ ...newProduct, [field]: e.target.value })}
         onImageChange={handleImageChange}
         onViewImageChange={handleViewImageChange}
-        onAddProduct={handleAddProduct}
+        onAddProduct={() => addProduct(newProduct, imageFile, viewFiles)}
       />
-      <ProductList products={products} onUpdateProduct={handleUpdateProduct} />
+      <ProductList products={products} onUpdateProduct={updateProduct} />
     </div>
   );
 };
@@ -1567,42 +1811,32 @@ Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\page
 import '../app/globals.css'
 import type { AppProps } from 'next/app'
 import Layout from '../components/layout/Layout'
-import React, { useEffect } from 'react';
+import { AuthProvider } from '../components/auth/AuthProvider'
+import React from 'react';
 import { useRouter } from 'next/router';
-import { useStore } from '../store';
-import { supabase } from '../utils/supabaseClient';
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
-  const { setUser } = useStore();
-
-  useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN') {
-        setUser(session?.user ?? null);
-      } else if (event === 'SIGNED_OUT') {
-        setUser(null);
-      }
-    });
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, [setUser]);
 
   // Kontrola, zda se jedná o zaměstnaneckou stránku
   const isEmployeePage = router.pathname.startsWith('/employee');
 
   // Pro zaměstnanecké stránky nepoužívat Layout
   if (isEmployeePage) {
-    return <Component {...pageProps} />;
+    return (
+      <AuthProvider>
+        <Component {...pageProps} />
+      </AuthProvider>
+    );
   }
 
   // Pro ostatní stránky použít Layout
   return (
-    <Layout>
-      <Component {...pageProps} />
-    </Layout>
+    <AuthProvider>
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
+    </AuthProvider>
   );
 }
 
@@ -1635,146 +1869,45 @@ export default ProductDesignerPage;
 
 Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\pages\employee\dashboard.tsx
 ==================================================
-import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/router';
-import { supabase } from '../../utils/supabaseClient';
-import { Order, OrderItem } from '../../types/types';
-import CanvasComponent from '../../components/products/CanvasComponent';
-import useProductViews from '../../hooks/useProductViews';
-import { loadDesign } from '../../services/designService';
-import { fabric } from 'fabric';
 import AuthGuard from '../../components/auth/AuthGuard';
 import { useStore } from '../../store';
+import OrdersList from '../../components/employee/OrdersList';
+import OrderDetails from '../../components/employee/OrderDetails';
+import { useOrders } from '../../hooks/useOrders';
+import { useDesign } from '../../hooks/useDesign';
+import useProductViews from '../../hooks/useProductViews';
 
 const EmployeeDashboard: React.FC = () => {
   const router = useRouter();
   const { user } = useStore();
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
-  const [uploadedImages, setUploadedImages] = useState<{ [key: string]: fabric.Image[] }>({ view_1: [], view_2: [], view_3: [], view_4: [] });
-  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
-  const [currentView, setCurrentView] = useState('view_1');
+  const { orders, selectedOrder, orderItems, handleViewOrder } = useOrders();
+  const { uploadedImages, selectedProductId, handleViewOrderItem } = useDesign();
   const productViews = useProductViews(selectedProductId || undefined);
+  const [currentView, setCurrentView] = React.useState('view_1');
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (user && !user.user_metadata?.is_employee) {
       router.push('/');
-    } else {
-      fetchOrders();
     }
   }, [user, router]);
-
-  const fetchOrders = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setOrders(data || []);
-    } catch (error) {
-      console.error('Chyba při načítání objednávek:', error);
-    }
-  };
-
-  const handleViewOrder = async (order: Order) => {
-    setSelectedOrder(order);
-    try {
-      const { data, error } = await supabase
-        .from('order_items')
-        .select('*')
-        .eq('order_id', order.id);
-
-      if (error) throw error;
-      setOrderItems(data || []);
-    } catch (error) {
-      console.error('Chyba při načítání položek objednávky:', error);
-    }
-  };
-
-  const handleViewOrderItem = async (item: OrderItem) => {
-    setSelectedProductId(item.product_id);
-    if (item.design_id) {
-      try {
-        const { data: design, error } = await supabase
-          .from('designs')
-          .select('*')
-          .eq('id', item.design_id)
-          .single();
-
-        if (error) throw error;
-
-        if (design) {
-          const loadedImages = await loadDesign(item.product_id, design);
-          if (loadedImages) {
-            setUploadedImages(loadedImages);
-          }
-        }
-      } catch (error) {
-        console.error('Chyba při načítání designu:', error);
-      }
-    }
-  };
 
   return (
     <AuthGuard>
       <div>
-        <h2>Objednávky zákazníků</h2>
-        {orders.length > 0 ? (
-          <ul>
-            {orders.map((order) => (
-              <li key={order.id}>
-                <p>ID objednávky: {order.id}</p>
-                <p>Celková cena: {order.total_price}</p>
-                <button onClick={() => handleViewOrder(order)}>Zobrazit objednávku</button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>Žádné objednávky nenalezeny</p>
-        )}
+        <h1>Dashboard zaměstnance</h1>
+        <OrdersList orders={orders} onViewOrder={handleViewOrder} />
         {selectedOrder && (
-          <div>
-            <h3>Náhled objednávky</h3>
-            <ul>
-              {orderItems.map((item) => (
-                <li key={item.id}>
-                  <p>ID produktu: {item.product_id}</p>
-                  <p>Množství: {item.quantity}</p>
-                  <p>Cena: {item.price}</p>
-                  <button onClick={() => handleViewOrderItem(item)}>Zobrazit návrh</button>
-                </li>
-              ))}
-            </ul>
-            {selectedProductId && (
-              <div>
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-                  {Object.entries(productViews).map(([key, value]) =>
-                    value && (
-                      <Image key={key}
-                        src={value}
-                        alt={`Náhled ${key}`}
-                        width={100}
-                        height={100}
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => setCurrentView(key)}
-                      />
-                    )
-                  )}
-                </div>
-                <CanvasComponent
-                  uploadedImages={uploadedImages}
-                  currentView={currentView}
-                  productViews={productViews}
-                  setUploadedImages={setUploadedImages}
-                  readOnly={true}
-                />
-              </div>
-            )}
-          </div>
+          <OrderDetails
+            order={selectedOrder}
+            orderItems={orderItems}
+            productViews={productViews}
+            uploadedImages={uploadedImages}
+            currentView={currentView}
+            setCurrentView={setCurrentView}
+            onViewOrderItem={handleViewOrderItem}
+          />
         )}
       </div>
     </AuthGuard>
@@ -1782,6 +1915,7 @@ const EmployeeDashboard: React.FC = () => {
 };
 
 export default EmployeeDashboard;
+
 
 ==================================================
 
@@ -1957,6 +2091,45 @@ export const loadDesign = async (productId: string, design: any) => {
 
 ==================================================
 
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\services\orderService.ts
+==================================================
+import { supabase } from '../utils/supabaseClient';
+import { Order, OrderItem } from '../types/types';
+
+export const fetchOrders = async (): Promise<Order[]> => {
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data || [];
+};
+
+export const fetchOrderItems = async (orderId: string): Promise<OrderItem[]> => {
+  const { data, error } = await supabase
+    .from('order_items')
+    .select('*')
+    .eq('order_id', orderId);
+
+  if (error) throw error;
+  return data || [];
+};
+
+export const fetchDesign = async (designId: string) => {
+  const { data, error } = await supabase
+    .from('designs')
+    .select('*')
+    .eq('id', designId)
+    .single();
+
+  if (error) throw error;
+  return data;
+};
+
+
+==================================================
+
 Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\services\auth\authService.ts
 ==================================================
 import { supabase } from '../../utils/supabaseClient';
@@ -2023,40 +2196,44 @@ export const isAuthenticated = async () => {
 
 Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\store\index.ts
 ==================================================
-// src/store/index.ts
-import { create } from 'zustand'
-import { User } from '@supabase/supabase-js'
-import { CartItem, Product, Order } from '../types/types'
-import { supabase } from '../utils/supabaseClient'
+import { create } from 'zustand';
+import { AuthSlice, createAuthSlice } from './slices/authSlice';
+import { CartSlice, createCartSlice } from './slices/cartSlice';
+import { ProductSlice, createProductSlice } from './slices/productSlice';
+import { OrderSlice, createOrderSlice } from './slices/orderSlice';
 
-interface AuthState {
-  user: User | null
-  isLoading: boolean
-  error: string | null
+type StoreState = AuthSlice & CartSlice & ProductSlice & OrderSlice;
+
+export const useStore = create<StoreState>()((...a) => ({
+  ...createAuthSlice(...a),
+  ...createCartSlice(...a),
+  ...createProductSlice(...a),
+  ...createOrderSlice(...a),
+}));
+
+
+==================================================
+
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\store\slices\authSlice.ts
+==================================================
+import { StateCreator } from 'zustand';
+import { User } from '@supabase/supabase-js';
+import { supabase } from '../../utils/supabaseClient';
+
+export interface AuthSlice {
+  user: User | null;
+  isLoading: boolean;
+  error: string | null;
+  setUser: (user: User | null) => void;
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<void>;
+  signOut: () => Promise<void>;
 }
 
-interface AppState extends AuthState {
-  cart: CartItem[]
-  products: Product[]
-  orders: Order[]
-  setUser: (user: User | null) => void
-  signIn: (email: string, password: string) => Promise<void>
-  signUp: (email: string, password: string) => Promise<void>
-  signOut: () => Promise<void>
-  addToCart: (item: CartItem) => void
-  removeFromCart: (productId: string) => void
-  setProducts: (products: Product[]) => void
-  setOrders: (orders: Order[]) => void
-  clearCart: () => void
-}
-
-export const useStore = create<AppState>((set, get) => ({
+export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
   user: null,
   isLoading: false,
   error: null,
-  cart: [],
-  products: [],
-  orders: [],
   setUser: (user) => set({ user }),
   signIn: async (email, password) => {
     set({ isLoading: true, error: null });
@@ -2088,6 +2265,25 @@ export const useStore = create<AppState>((set, get) => ({
       set({ error: (error as Error).message, isLoading: false });
     }
   },
+});
+
+
+==================================================
+
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\store\slices\cartSlice.ts
+==================================================
+import { StateCreator } from 'zustand';
+import { CartItem } from '../../types/types';
+
+export interface CartSlice {
+  cart: CartItem[];
+  addToCart: (item: CartItem) => void;
+  removeFromCart: (productId: string) => void;
+  clearCart: () => void;
+}
+
+export const createCartSlice: StateCreator<CartSlice> = (set) => ({
+  cart: [],
   addToCart: (item) => set((state) => {
     const existingItemIndex = state.cart.findIndex(
       (cartItem) => cartItem.productId === item.productId && cartItem.size === item.size
@@ -2109,10 +2305,48 @@ export const useStore = create<AppState>((set, get) => ({
     localStorage.setItem('cartItems', JSON.stringify(updatedCart));
     return { cart: updatedCart };
   }),
-  setProducts: (products) => set({ products }),
+  clearCart: () => {
+    localStorage.removeItem('cartItems');
+    set({ cart: [] });
+  },
+});
+
+
+==================================================
+
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\store\slices\orderSlice.ts
+==================================================
+import { StateCreator } from 'zustand';
+import { Order } from '../../types/types';
+
+export interface OrderSlice {
+  orders: Order[];
+  setOrders: (orders: Order[]) => void;
+}
+
+export const createOrderSlice: StateCreator<OrderSlice> = (set) => ({
+  orders: [],
   setOrders: (orders) => set({ orders }),
-  clearCart: () => set({ cart: [] }),
-}))
+});
+
+
+==================================================
+
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\store\slices\productSlice.ts
+==================================================
+import { StateCreator } from 'zustand';
+import { Product } from '../../types/types';
+
+export interface ProductSlice {
+  products: Product[];
+  setProducts: (products: Product[]) => void;
+}
+
+export const createProductSlice: StateCreator<ProductSlice> = (set) => ({
+  products: [],
+  setProducts: (products) => set({ products }),
+});
+
 
 ==================================================
 

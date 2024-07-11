@@ -1,16 +1,15 @@
 import React from 'react';
 import { CartItem as CartItemType } from '../../types/types';
-import { handleQuantityChange, handleSizeChange } from './cartService';
-import { useStore } from '../../store';
 
 interface CartItemProps {
   item: CartItemType;
   index: number;
+  onQuantityChange: (index: number, quantity: number) => void;
+  onSizeChange: (index: number, size: 'S' | 'M' | 'L' | 'XL') => void;
+  onRemove: (productId: string) => void;
 }
 
-const CartItem: React.FC<CartItemProps> = ({ item, index }) => {
-  const { removeFromCart } = useStore();
-
+const CartItem: React.FC<CartItemProps> = ({ item, index, onQuantityChange, onSizeChange, onRemove }) => {
   return (
     <li className="border p-4 rounded">
       <p>Produkt ID: {item.productId}</p>
@@ -19,7 +18,7 @@ const CartItem: React.FC<CartItemProps> = ({ item, index }) => {
         Velikost:
         <select 
           value={item.size} 
-          onChange={(e) => handleSizeChange(index, e.target.value as 'S' | 'M' | 'L' | 'XL')}
+          onChange={(e) => onSizeChange(index, e.target.value as 'S' | 'M' | 'L' | 'XL')}
           className="ml-2 border rounded"
         >
           <option value="S">S</option>
@@ -33,14 +32,14 @@ const CartItem: React.FC<CartItemProps> = ({ item, index }) => {
         <input
           type="number"
           value={item.quantity}
-          onChange={(e) => handleQuantityChange(index, parseInt(e.target.value))}
+          onChange={(e) => onQuantityChange(index, parseInt(e.target.value))}
           min="1"
           className="ml-2 border rounded w-16 text-center"
         />
       </label>
       <p>Cena: {item.price} Kč</p>
       <button 
-        onClick={() => removeFromCart(item.productId)}
+        onClick={() => onRemove(item.productId)}
         className="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors"
       >
         Odstranit

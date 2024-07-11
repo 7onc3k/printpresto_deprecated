@@ -1,0 +1,591 @@
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\middleware.ts
+==================================================
+Importy:
+next/server
+next/server
+@supabase/auth-helpers-nextjs
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\app\globals.css
+==================================================
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\OrderDetails.tsx
+==================================================
+Importy:
+react
+../types/types
+next/image
+./products/CanvasComponent
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\OrdersList.tsx
+==================================================
+Importy:
+react
+../types/types
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\auth\AuthGuard.tsx
+==================================================
+Importy:
+react
+next/router
+../../store
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\auth\AuthProvider.tsx
+==================================================
+Importy:
+react
+../../store
+../../utils/supabaseClient
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\EditProducts\AddProductForm.tsx
+==================================================
+Importy:
+react
+./types
+./ImageUpload
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\EditProducts\ImageUpload.tsx
+==================================================
+Importy:
+react
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\EditProducts\ProductItem.tsx
+==================================================
+Importy:
+react
+./types
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\EditProducts\ProductList.tsx
+==================================================
+Importy:
+react
+./types
+./ProductItem
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\EditProducts\types.ts
+==================================================
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\employee\DesignViewerComponent.tsx
+==================================================
+Importy:
+react
+fabric
+../products/CanvasComponent
+../../hooks/useProductViews
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\employee\OrderDetailsComponent.tsx
+==================================================
+Importy:
+react
+../../types/types
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\employee\OrderListComponent.tsx
+==================================================
+Importy:
+react
+../../types/types
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\employee\OrdersList.tsx
+==================================================
+Importy:
+react
+../../types/types
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\layout\Layout.tsx
+==================================================
+Importy:
+react
+next/link
+../../store
+next/router
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\products\ActionButtons.tsx
+==================================================
+Importy:
+react
+../../types/productDesigner
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\products\CanvasComponent.tsx
+==================================================
+Importy:
+react
+fabric
+next/image
+./CanvasSetup
+./ImageUploader
+./ImageManager
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\products\CanvasCreator.tsx
+==================================================
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\products\CanvasSetup.tsx
+==================================================
+Importy:
+react
+fabric
+next/image
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\products\ImageManager.tsx
+==================================================
+Importy:
+react
+fabric
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\products\ImageUploader.tsx
+==================================================
+Importy:
+react
+fabric
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\products\ProductDesignerLayout.tsx
+==================================================
+Importy:
+react
+./ProductViewSelector
+./CanvasComponent
+./ActionButtons
+../../types/productDesigner
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\products\ProductViewSelector.tsx
+==================================================
+Importy:
+react
+next/image
+../../types/productDesigner
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\products\SavedDesigns.tsx
+==================================================
+Importy:
+react
+../../utils/supabaseClient
+@supabase/supabase-js
+next/router
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\features\cart\Cart.tsx
+==================================================
+Importy:
+react
+../../hooks/useCart
+./CartItem
+./CheckoutButton
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\features\cart\CartItem.tsx
+==================================================
+Importy:
+react
+../../types/types
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\features\cart\cartService.ts
+==================================================
+Importy:
+../../store
+../../utils/supabaseClient
+../../types/types
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\features\cart\cartStore.ts
+==================================================
+Importy:
+../../store
+../../types/types
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\features\cart\CheckoutButton.tsx
+==================================================
+Importy:
+react
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useCart.ts
+==================================================
+Importy:
+react
+../store
+../features/cart/cartService
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useDesign.ts
+==================================================
+Importy:
+react
+fabric
+../services/designService
+../services/orderService
+../types/types
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useEmployeeAuth.ts
+==================================================
+Importy:
+react
+next/router
+../store
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useImageUpload.ts
+==================================================
+Importy:
+react
+../utils/supabaseClient
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useOrders.ts
+==================================================
+Importy:
+react
+../types/types
+../services/orderService
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useProductAdd.ts
+==================================================
+Importy:
+react
+../utils/supabaseClient
+../types/types
+./useImageUpload
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useProductDesigner.ts
+==================================================
+Importy:
+react
+next/router
+fabric
+./useUser
+./useProductViews
+../services/designService
+../store
+../types/types
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useProductList.ts
+==================================================
+Importy:
+react
+../utils/supabaseClient
+../types/types
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useProductManagement.ts
+==================================================
+Importy:
+react
+../utils/supabaseClient
+../components/EditProducts/types
+./useImageUpload
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useProducts.ts
+==================================================
+Importy:
+react
+../utils/supabaseClient
+../components/EditProducts/types
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useProductState.ts
+==================================================
+Importy:
+react
+../utils/supabaseClient
+../components/EditProducts/types
+./useImageUpload
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useProductUpdate.ts
+==================================================
+Importy:
+../utils/supabaseClient
+../types/types
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useProductViews.tsx
+==================================================
+Importy:
+react
+../utils/supabaseClient
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useUser.tsx
+==================================================
+Importy:
+react
+../utils/supabaseClient
+@supabase/supabase-js
+../services/auth/authService
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\pages\cart.tsx
+==================================================
+Importy:
+react
+../features/cart/cart
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\pages\editproducts.tsx
+==================================================
+Importy:
+react
+../hooks/useProductList
+../hooks/useProductAdd
+../hooks/useProductUpdate
+../hooks/useImageUpload
+../components/EditProducts/AddProductForm
+../components/EditProducts/ProductList
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\pages\index.tsx
+==================================================
+Importy:
+react
+next/link
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\pages\login.tsx
+==================================================
+Importy:
+react
+next/router
+next/link
+../store
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\pages\products.tsx
+==================================================
+Importy:
+react
+next/link
+next/image
+../store
+../utils/supabaseClient
+../types/types
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\pages\profile.tsx
+==================================================
+Importy:
+react
+next/router
+../store
+../components/products/SavedDesigns
+../components/auth/AuthGuard
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\pages\register.tsx
+==================================================
+Importy:
+react
+next/router
+next/link
+../store
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\pages\_app.tsx
+==================================================
+Importy:
+next/app
+../components/layout/Layout
+../components/auth/AuthProvider
+react
+next/router
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\pages\designer\[id].tsx
+==================================================
+Importy:
+react
+next/router
+../../components/products/ProductDesignerLayout
+../../hooks/useProductDesigner
+../../types/productDesigner
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\pages\employee\dashboard.tsx
+==================================================
+Importy:
+react
+../../components/auth/AuthGuard
+../../components/employee/OrderListComponent
+../../components/employee/OrderDetailsComponent
+../../components/employee/DesignViewerComponent
+../../hooks/useOrders
+../../hooks/useDesign
+../../hooks/useEmployeeAuth
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\pages\employee\login.tsx
+==================================================
+Importy:
+react
+next/router
+../../utils/supabaseClient
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\services\designService.ts
+==================================================
+Importy:
+../utils/supabaseClient
+fabric
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\services\orderService.ts
+==================================================
+Importy:
+../utils/supabaseClient
+../types/types
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\services\auth\authService.ts
+==================================================
+Importy:
+../../utils/supabaseClient
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\store\index.ts
+==================================================
+Importy:
+zustand
+./slices/authSlice
+./slices/cartSlice
+./slices/productSlice
+./slices/orderSlice
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\store\slices\authSlice.ts
+==================================================
+Importy:
+zustand
+@supabase/supabase-js
+../../utils/supabaseClient
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\store\slices\cartSlice.ts
+==================================================
+Importy:
+zustand
+../../types/types
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\store\slices\orderSlice.ts
+==================================================
+Importy:
+zustand
+../../types/types
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\store\slices\productSlice.ts
+==================================================
+Importy:
+zustand
+../../types/types
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\types\productDesigner.ts
+==================================================
+Importy:
+next/image
+fabric
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\types\types.ts
+==================================================
+
+==================================================
+
+Soubor: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\utils\supabaseClient.js
+==================================================
+Importy:
+@supabase/supabase-js
+
+==================================================

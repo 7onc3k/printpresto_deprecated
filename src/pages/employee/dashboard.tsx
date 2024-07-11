@@ -1,42 +1,31 @@
 import React from 'react';
-import { useRouter } from 'next/router';
 import AuthGuard from '../../components/auth/AuthGuard';
-import { useStore } from '../../store';
-import OrdersList from '../../components/employee/OrdersList';
-import OrderDetails from '../../components/employee/OrderDetails';
+import OrderListComponent from '../../components/employee/OrderListComponent';
+import OrderDetailsComponent from '../../components/employee/OrderDetailsComponent';
+import DesignViewerComponent from '../../components/employee/DesignViewerComponent';
 import { useOrders } from '../../hooks/useOrders';
 import { useDesign } from '../../hooks/useDesign';
-import useProductViews from '../../hooks/useProductViews';
+import { useEmployeeAuth } from '../../hooks/useEmployeeAuth';
 
 const EmployeeDashboard: React.FC = () => {
-  const router = useRouter();
-  const { user } = useStore();
+  useEmployeeAuth();
   const { orders, selectedOrder, orderItems, handleViewOrder } = useOrders();
   const { uploadedImages, selectedProductId, handleViewOrderItem } = useDesign();
-  const productViews = useProductViews(selectedProductId || undefined);
-  const [currentView, setCurrentView] = React.useState('view_1');
-
-  React.useEffect(() => {
-    if (user && !user.user_metadata?.is_employee) {
-      router.push('/');
-    }
-  }, [user, router]);
 
   return (
     <AuthGuard>
       <div>
         <h1>Dashboard zaměstnance</h1>
-        <OrdersList orders={orders} onViewOrder={handleViewOrder} />
+        <OrderListComponent orders={orders} onViewOrder={handleViewOrder} />
         {selectedOrder && (
-          <OrderDetails
-            order={selectedOrder}
-            orderItems={orderItems}
-            productViews={productViews}
-            uploadedImages={uploadedImages}
-            currentView={currentView}
-            setCurrentView={setCurrentView}
-            onViewOrderItem={handleViewOrderItem}
-          />
+          <>
+            <OrderDetailsComponent order={selectedOrder} orderItems={orderItems} />
+            <DesignViewerComponent
+              productId={selectedProductId}
+              uploadedImages={uploadedImages}
+              onViewOrderItem={handleViewOrderItem}
+            />
+          </>
         )}
       </div>
     </AuthGuard>

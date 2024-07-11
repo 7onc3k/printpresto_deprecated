@@ -424,6 +424,122 @@ export interface ViewFiles {
 
 ==================================================
 
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\employee\DesignViewerComponent.tsx
+==================================================
+import React from 'react';
+import { fabric } from 'fabric';
+import CanvasComponent from '../products/CanvasComponent';
+import useProductViews from '../../hooks/useProductViews';
+
+interface DesignViewerComponentProps {
+  productId: string | null;
+  uploadedImages: { [key: string]: fabric.Image[] };
+  onViewOrderItem: (item: any) => void;
+}
+
+const DesignViewerComponent: React.FC<DesignViewerComponentProps> = ({
+  productId,
+  uploadedImages,
+  onViewOrderItem,
+}) => {
+  const [currentView, setCurrentView] = React.useState('view_1');
+  const productViews = useProductViews(productId || undefined);
+
+  if (!productId) return null;
+
+  return (
+    <div>
+      <h3>Náhled designu</h3>
+      <CanvasComponent
+        uploadedImages={uploadedImages}
+        currentView={currentView}
+        productViews={productViews}
+        setUploadedImages={() => {}}
+        readOnly={true}
+      />
+      <div>
+        {Object.keys(productViews).map((view) => (
+          <button key={view} onClick={() => setCurrentView(view)}>
+            {view}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default DesignViewerComponent;
+
+
+==================================================
+
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\employee\OrderDetailsComponent.tsx
+==================================================
+import React from 'react';
+import { Order, OrderItem } from '../../types/types';
+
+interface OrderDetailsComponentProps {
+  order: Order;
+  orderItems: OrderItem[];
+}
+
+const OrderDetailsComponent: React.FC<OrderDetailsComponentProps> = ({ order, orderItems }) => {
+  return (
+    <div>
+      <h3>Detail objednávky</h3>
+      <p>ID objednávky: {order.id}</p>
+      <p>Celková cena: {order.total_price}</p>
+      <h4>Položky objednávky:</h4>
+      <ul>
+        {orderItems.map((item) => (
+          <li key={item.id}>
+            <p>Produkt ID: {item.product_id}</p>
+            <p>Množství: {item.quantity}</p>
+            <p>Cena: {item.price}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default OrderDetailsComponent;
+
+
+==================================================
+
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\employee\OrderListComponent.tsx
+==================================================
+import React from 'react';
+import { Order } from '../../types/types';
+
+interface OrderListComponentProps {
+  orders: Order[];
+  onViewOrder: (order: Order) => void;
+}
+
+const OrderListComponent: React.FC<OrderListComponentProps> = ({ orders, onViewOrder }) => {
+  return (
+    <div>
+      <h2>Seznam objednávek</h2>
+      <ul>
+        {orders.map((order) => (
+          <li key={order.id}>
+            <span>ID objednávky: {order.id}</span>
+            <span>Celková cena: {order.total_price}</span>
+            <button onClick={() => onViewOrder(order)}>Zobrazit detail</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default OrderListComponent;
+
+
+==================================================
+
 Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\employee\OrdersList.tsx
 ==================================================
 import React from 'react';
@@ -596,6 +712,12 @@ const CanvasComponent: React.FC<CanvasComponentProps> = ({
 };
 
 export default CanvasComponent;
+
+==================================================
+
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\components\products\CanvasCreator.tsx
+==================================================
+
 
 ==================================================
 
@@ -944,18 +1066,13 @@ export default SavedDesigns;
 
 Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\features\cart\Cart.tsx
 ==================================================
-import React, { useEffect } from 'react';
-import { useStore } from '../../store';
-import { loadCartFromLocalStorage, handleQuantityChange, handleSizeChange, handleCheckout } from './cartService';
+import React from 'react';
+import { useCart } from '../../hooks/useCart';
 import CartItem from './CartItem';
 import CheckoutButton from './CheckoutButton';
 
 const Cart: React.FC = () => {
-  const { cart, removeFromCart } = useStore();
-
-  useEffect(() => {
-    loadCartFromLocalStorage();
-  }, []);
+  const { cart, removeFromCart, handleQuantityChange, handleSizeChange, handleCheckout } = useCart();
 
   return (
     <div>
@@ -983,6 +1100,7 @@ const Cart: React.FC = () => {
 };
 
 export default Cart;
+
 
 ==================================================
 
@@ -1161,6 +1279,31 @@ export default CheckoutButton;
 
 ==================================================
 
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useCart.ts
+==================================================
+import { useEffect } from 'react';
+import { useStore } from '../store';
+import { loadCartFromLocalStorage, handleQuantityChange, handleSizeChange, handleCheckout } from '../features/cart/cartService';
+
+export const useCart = () => {
+  const { cart, removeFromCart } = useStore();
+
+  useEffect(() => {
+    loadCartFromLocalStorage();
+  }, []);
+
+  return {
+    cart,
+    removeFromCart,
+    handleQuantityChange,
+    handleSizeChange,
+    handleCheckout
+  };
+};
+
+
+==================================================
+
 Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useDesign.ts
 ==================================================
 import { useState } from 'react';
@@ -1191,6 +1334,28 @@ export const useDesign = () => {
   };
 
   return { uploadedImages, selectedProductId, handleViewOrderItem };
+};
+
+
+==================================================
+
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useEmployeeAuth.ts
+==================================================
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { useStore } from '../store';
+
+export const useEmployeeAuth = () => {
+  const router = useRouter();
+  const { user } = useStore();
+
+  useEffect(() => {
+    if (user && !user.user_metadata?.is_employee) {
+      router.push('/');
+    }
+  }, [user, router]);
+
+  return { user };
 };
 
 
@@ -1283,6 +1448,53 @@ export const useOrders = () => {
 
 ==================================================
 
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useProductAdd.ts
+==================================================
+import { useState } from 'react';
+import { supabase } from '../utils/supabaseClient';
+import { Product } from '../types/types';
+import { useImageUpload } from './useImageUpload';
+
+export const useProductAdd = () => {
+  const [newProduct, setNewProduct] = useState<Partial<Product>>({});
+  const { uploadImage, uploadViewImage } = useImageUpload();
+
+  const addProduct = async (product: Partial<Product>, imageFile: File | null, viewFiles: any) => {
+    let imageUrl: string = '';
+    if (imageFile) {
+      const uploadedImageUrl = await uploadImage(imageFile);
+      if (uploadedImageUrl) {
+        imageUrl = uploadedImageUrl;
+      }
+    }
+
+    const viewUrls: { [key: string]: string } = {};
+    for (const view in viewFiles) {
+      if (viewFiles[view]) {
+        const uploadedViewUrl = await uploadViewImage(viewFiles[view]!, view);
+        if (uploadedViewUrl) {
+          viewUrls[view] = uploadedViewUrl;
+        }
+      }
+    }
+
+    const productToAdd = { ...product, image_url: imageUrl, ...viewUrls };
+    const { data, error } = await supabase.from('products').insert([productToAdd]).select();
+    if (error) {
+      console.error('Chyba při přidávání produktu:', error);
+      return null;
+    } else {
+      setNewProduct({});
+      return data[0];
+    }
+  };
+
+  return { newProduct, setNewProduct, addProduct };
+};
+
+
+==================================================
+
 Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useProductDesigner.ts
 ==================================================
 // src/hooks/useProductDesigner.ts
@@ -1346,6 +1558,103 @@ export const useProductDesigner = () => {
     addToCartHandler,
   };
 };
+
+==================================================
+
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useProductList.ts
+==================================================
+import { useState, useEffect } from 'react';
+import { supabase } from '../utils/supabaseClient';
+import { Product } from '../types/types';
+
+export const useProductList = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+
+  const fetchProducts = async () => {
+    const { data, error } = await supabase.from('products').select('*');
+    if (error) {
+      console.error('Chyba při načítání produktů:', error);
+    } else {
+      setProducts(data || []);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  return { products, fetchProducts };
+};
+
+
+==================================================
+
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useProductManagement.ts
+==================================================
+import { useState, useEffect } from 'react';
+import { supabase } from '../utils/supabaseClient';
+import { Product } from '../components/EditProducts/types';
+import { useImageUpload } from './useImageUpload';
+
+export const useProductManagement = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [newProduct, setNewProduct] = useState<Partial<Product>>({});
+  const { uploadImage, uploadViewImage } = useImageUpload();
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    const { data, error } = await supabase.from('products').select('*');
+    if (error) {
+      console.error('Chyba při načítání produktů:', error);
+    } else {
+      setProducts(data);
+    }
+  };
+
+  const addProduct = async (product: Partial<Product>, imageFile: File | null, viewFiles: any) => {
+    let imageUrl: string = '';
+    if (imageFile) {
+      const uploadedImageUrl = await uploadImage(imageFile);
+      if (uploadedImageUrl) {
+        imageUrl = uploadedImageUrl;
+      }
+    }
+
+    const viewUrls: { [key: string]: string } = {};
+    for (const view in viewFiles) {
+      if (viewFiles[view]) {
+        const uploadedViewUrl = await uploadViewImage(viewFiles[view]!, view);
+        if (uploadedViewUrl) {
+          viewUrls[view] = uploadedViewUrl;
+        }
+      }
+    }
+
+    const productToAdd = { ...product, image_url: imageUrl, ...viewUrls };
+    const { data, error } = await supabase.from('products').insert([productToAdd]).select();
+    if (error) {
+      console.error('Chyba při přidávání produktu:', error);
+    } else {
+      setProducts([...products, data[0]]);
+      setNewProduct({});
+    }
+  };
+
+  const updateProduct = async (id: string, updatedProduct: Partial<Product>) => {
+    const { data, error } = await supabase.from('products').update(updatedProduct).eq('id', id).select();
+    if (error) {
+      console.error('Chyba při aktualizaci produktu:', error);
+    } else {
+      setProducts(products.map(product => (product.id === id ? data[0] : product)));
+    }
+  };
+
+  return { products, newProduct, setNewProduct, addProduct, updateProduct };
+};
+
 
 ==================================================
 
@@ -1429,6 +1738,28 @@ export const useProductState = () => {
 
   return { products, newProduct, setNewProduct, addProduct, updateProduct };
 };
+
+==================================================
+
+Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\hooks\useProductUpdate.ts
+==================================================
+import { supabase } from '../utils/supabaseClient';
+import { Product } from '../types/types';
+
+export const useProductUpdate = () => {
+  const updateProduct = async (id: string, updatedProduct: Partial<Product>) => {
+    const { data, error } = await supabase.from('products').update(updatedProduct).eq('id', id).select();
+    if (error) {
+      console.error('Chyba při aktualizaci produktu:', error);
+      return null;
+    } else {
+      return data[0];
+    }
+  };
+
+  return { updateProduct };
+};
+
 
 ==================================================
 
@@ -1523,14 +1854,32 @@ export default CartPage;
 Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\pages\editproducts.tsx
 ==================================================
 import React from 'react';
-import { useProductState } from '../hooks/useProductState';
+import { useProductList } from '../hooks/useProductList';
+import { useProductAdd } from '../hooks/useProductAdd';
+import { useProductUpdate } from '../hooks/useProductUpdate';
 import { useImageUpload } from '../hooks/useImageUpload';
 import AddProductForm from '../components/EditProducts/AddProductForm';
 import ProductList from '../components/EditProducts/ProductList';
 
 const EditProducts: React.FC = () => {
-  const { products, newProduct, setNewProduct, addProduct, updateProduct } = useProductState();
+  const { products, fetchProducts } = useProductList();
+  const { newProduct, setNewProduct, addProduct } = useProductAdd();
+  const { updateProduct } = useProductUpdate();
   const { imageFile, viewFiles, handleImageChange, handleViewImageChange } = useImageUpload();
+
+  const handleAddProduct = async () => {
+    const addedProduct = await addProduct(newProduct, imageFile, viewFiles);
+    if (addedProduct) {
+      fetchProducts();
+    }
+  };
+
+  const handleUpdateProduct = async (id: string, updatedProduct: Partial<any>) => {
+    const updated = await updateProduct(id, updatedProduct);
+    if (updated) {
+      fetchProducts();
+    }
+  };
 
   return (
     <div>
@@ -1540,14 +1889,15 @@ const EditProducts: React.FC = () => {
         onInputChange={(e, field) => setNewProduct({ ...newProduct, [field]: e.target.value })}
         onImageChange={handleImageChange}
         onViewImageChange={handleViewImageChange}
-        onAddProduct={() => addProduct(newProduct, imageFile, viewFiles)}
+        onAddProduct={handleAddProduct}
       />
-      <ProductList products={products} onUpdateProduct={updateProduct} />
+      <ProductList products={products} onUpdateProduct={handleUpdateProduct} />
     </div>
   );
 };
 
 export default EditProducts;
+
 
 ==================================================
 
@@ -1870,44 +2220,33 @@ export default ProductDesignerPage;
 Obsah souboru: c:\Users\thanh\Downloads\Programy\printpresto_deprecated\src\pages\employee\dashboard.tsx
 ==================================================
 import React from 'react';
-import { useRouter } from 'next/router';
 import AuthGuard from '../../components/auth/AuthGuard';
-import { useStore } from '../../store';
-import OrdersList from '../../components/employee/OrdersList';
-import OrderDetails from '../../components/employee/OrderDetails';
+import OrderListComponent from '../../components/employee/OrderListComponent';
+import OrderDetailsComponent from '../../components/employee/OrderDetailsComponent';
+import DesignViewerComponent from '../../components/employee/DesignViewerComponent';
 import { useOrders } from '../../hooks/useOrders';
 import { useDesign } from '../../hooks/useDesign';
-import useProductViews from '../../hooks/useProductViews';
+import { useEmployeeAuth } from '../../hooks/useEmployeeAuth';
 
 const EmployeeDashboard: React.FC = () => {
-  const router = useRouter();
-  const { user } = useStore();
+  useEmployeeAuth();
   const { orders, selectedOrder, orderItems, handleViewOrder } = useOrders();
   const { uploadedImages, selectedProductId, handleViewOrderItem } = useDesign();
-  const productViews = useProductViews(selectedProductId || undefined);
-  const [currentView, setCurrentView] = React.useState('view_1');
-
-  React.useEffect(() => {
-    if (user && !user.user_metadata?.is_employee) {
-      router.push('/');
-    }
-  }, [user, router]);
 
   return (
     <AuthGuard>
       <div>
         <h1>Dashboard zaměstnance</h1>
-        <OrdersList orders={orders} onViewOrder={handleViewOrder} />
+        <OrderListComponent orders={orders} onViewOrder={handleViewOrder} />
         {selectedOrder && (
-          <OrderDetails
-            order={selectedOrder}
-            orderItems={orderItems}
-            productViews={productViews}
-            uploadedImages={uploadedImages}
-            currentView={currentView}
-            setCurrentView={setCurrentView}
-            onViewOrderItem={handleViewOrderItem}
-          />
+          <>
+            <OrderDetailsComponent order={selectedOrder} orderItems={orderItems} />
+            <DesignViewerComponent
+              productId={selectedProductId}
+              uploadedImages={uploadedImages}
+              onViewOrderItem={handleViewOrderItem}
+            />
+          </>
         )}
       </div>
     </AuthGuard>

@@ -1,0 +1,538 @@
+{
+  "src/components/EditProducts/ImageUpload.tsx": {
+    "type": "JavaScript/TypeScript",
+    "description": "A React component for handling image uploads.",
+    "exports": [
+      "ImageUploadProps"
+    ],
+    "imports": [
+      "React"
+    ],
+    "functions": [],
+    "hooks": [],
+    "attributes": [
+      "interface",
+      "props"
+    ],
+    "category": "Component"
+  },
+  "src/components/EditProducts/types.ts": {
+    "type": "TypeScript file",
+    "description": "Defines the structure of a Product object",
+    "exports": [
+      "Product"
+    ],
+    "imports": [],
+    "functions": [],
+    "hooks": [],
+    "attributes": [
+      "id",
+      "name",
+      "description",
+      "price"
+    ],
+    "category": "Data Model"
+  },
+  "src/types/types.ts": {
+    "type": "TypeScript file",
+    "description": "Defines the structure of a Product object with optional description.",
+    "exports": [
+      "Product"
+    ],
+    "imports": [],
+    "functions": [],
+    "hooks": [],
+    "attributes": [
+      "id: number",
+      "name: string",
+      "description?: string"
+    ],
+    "category": "Data Model"
+  },
+  "src/app/globals.css": {
+    "type": "CSS file",
+    "description": "A CSS file configured with Tailwind CSS for styling, including base, components, and utilities layers, and defines custom properties for foreground color.",
+    "exports": [],
+    "imports": [],
+    "functions": [],
+    "hooks": [],
+    "attributes": [
+      "Tailwind CSS configuration",
+      "Custom CSS properties"
+    ],
+    "category": "Styling"
+  },
+  "src/utils/supabaseClient.js": {
+    "type": "JavaScript",
+    "description": "A utility file for creating and managing a Supabase client instance.",
+    "exports": [
+      "supabase"
+    ],
+    "imports": [
+      "@supabase/supabase-js"
+    ],
+    "functions": [
+      "createClient: Initializes a Supabase client with provided URL and key."
+    ],
+    "hooks": [],
+    "attributes": [
+      "supabaseUrl",
+      "supabaseKey"
+    ],
+    "category": "Utility"
+  },
+  "src/components/designer/CanvasComponent.tsx": {
+    "type": "JavaScript/TypeScript file",
+    "description": "A React component that integrates Fabric.js for canvas manipulation.",
+    "exports": [],
+    "imports": [
+      "React",
+      "useEffect",
+      "useRef",
+      "fabric"
+    ],
+    "functions": [],
+    "hooks": [
+      "useEffect",
+      "useRef"
+    ],
+    "attributes": [
+      "Integration with Fabric.js",
+      "Canvas manipulation"
+    ],
+    "category": "UI Component"
+  },
+  "src/pages/_app.tsx": {
+    "type": "React Component",
+    "description": "Custom App component for a Next.js application to initialize pages.",
+    "exports": [],
+    "imports": [
+      "../app/globals.css",
+      "next/app"
+    ],
+    "functions": [
+      "Custom App Component: Initializes pages with global CSS and other configurations."
+    ],
+    "hooks": [],
+    "attributes": [
+      "Next.js specific",
+      "Global CSS import"
+    ],
+    "category": "Application Initialization"
+  },
+  "src/components/EditProducts/AddProductForm.tsx": {
+    "type": "JavaScript/TypeScript",
+    "description": "A file that likely contains React component(s) related to product views and image uploads.",
+    "exports": [],
+    "imports": [
+      "React",
+      "Product",
+      "ViewFiles",
+      "ImageUpload"
+    ],
+    "functions": [],
+    "hooks": [],
+    "attributes": [
+      "React component",
+      "Product and ViewFiles types",
+      "ImageUpload component"
+    ],
+    "category": "UI Component"
+  },
+  "src/components/common/LoginModal.tsx": {
+    "type": "React Component",
+    "description": "A modal component for user login, utilizing Supabase for authentication.",
+    "exports": [
+      "LoginModal"
+    ],
+    "imports": [
+      "React",
+      "useState",
+      "supabase"
+    ],
+    "functions": [
+      "LoginModal - Renders a modal for user login."
+    ],
+    "hooks": [
+      "useState"
+    ],
+    "attributes": [
+      "React component",
+      "Authentication",
+      "Modal"
+    ],
+    "category": "UI Component"
+  },
+  "src/pages/employee/login.tsx": {
+    "type": "JavaScript/React Component",
+    "description": "A React component that likely interacts with Supabase for state management and data fetching.",
+    "exports": [],
+    "imports": [
+      "React",
+      "useState",
+      "supabase from '../../utils/supabaseClient'"
+    ],
+    "functions": [],
+    "hooks": [
+      "useState"
+    ],
+    "attributes": [
+      "State management",
+      "Data fetching"
+    ],
+    "category": "UI Component"
+  },
+  "src/components/EditProducts/ProductList.tsx": {
+    "type": "JavaScript/TypeScript file",
+    "description": "A React component file likely responsible for rendering a list or details of products, importing types and other components for composition.",
+    "exports": [],
+    "imports": [
+      "React",
+      "Product from './types'",
+      "ProductItem from './ProductItem'"
+    ],
+    "functions": [],
+    "hooks": [],
+    "attributes": [
+      "React component",
+      "Product data handling"
+    ],
+    "category": "UI Component"
+  },
+  "src/pages/editproducts.tsx": {
+    "type": "JavaScript/React Component",
+    "description": "A React component that likely interacts with Supabase for data fetching or manipulation.",
+    "exports": [],
+    "imports": [
+      "React",
+      "useState",
+      "useEffect",
+      "supabase"
+    ],
+    "functions": [],
+    "hooks": [
+      "useState",
+      "useEffect"
+    ],
+    "attributes": [
+      "Interacts with Supabase",
+      "Uses React hooks for state and lifecycle management"
+    ],
+    "category": "Frontend"
+  },
+  "src/components/designer/SavedDesigns.tsx": {
+    "type": "JavaScript/React Component",
+    "description": "A React component that likely interacts with Supabase for data fetching or manipulation.",
+    "exports": [],
+    "imports": [
+      "React",
+      "useEffect",
+      "useState",
+      "supabase"
+    ],
+    "functions": [],
+    "hooks": [
+      "useEffect",
+      "useState"
+    ],
+    "attributes": [
+      "Interacts with Supabase",
+      "Uses React hooks for state and side effects"
+    ],
+    "category": "UI Component"
+  },
+  "src/hooks/useProductViews.tsx": {
+    "type": "JavaScript/React Component",
+    "description": "A React component that likely interacts with Supabase for data fetching or manipulation.",
+    "exports": [],
+    "imports": [
+      "useEffect",
+      "useState",
+      "supabase"
+    ],
+    "functions": [],
+    "hooks": [
+      "useEffect",
+      "useState"
+    ],
+    "attributes": [
+      "Interacts with Supabase",
+      "Uses React hooks for state and lifecycle management"
+    ],
+    "category": "Data Fetching/Manipulation"
+  },
+  "src/pages/designer/[id].tsx": {
+    "type": "JavaScript/React Component",
+    "description": "A component likely designed for rendering images and utilizing React hooks for state and side-effect management.",
+    "exports": [],
+    "imports": [
+      "next/image",
+      "react",
+      "useEffect",
+      "useState",
+      "useRout"
+    ],
+    "functions": [],
+    "hooks": [
+      "useEffect",
+      "useState"
+    ],
+    "attributes": [
+      "Image rendering",
+      "State management",
+      "Side-effect handling"
+    ],
+    "category": "UI Component"
+  },
+  "src/pages/index.tsx": {
+    "type": "TypeScript React Component",
+    "description": "The main landing page component for a Next.js application.",
+    "exports": [
+      "Home"
+    ],
+    "imports": [
+      "React",
+      "Link from 'next/link'"
+    ],
+    "functions": [
+      "Home: The main functional component that likely renders the landing page content."
+    ],
+    "hooks": [],
+    "attributes": [
+      "Uses Next.js's Link component for client-side transitions between routes."
+    ],
+    "category": "Page Component"
+  },
+  "src/components/common/UserProfile.tsx": {
+    "type": "JavaScript/React Component",
+    "description": "A React component that likely manages user-specific saved designs, potentially integrating with Supabase for user data management.",
+    "exports": [],
+    "imports": [
+      "React",
+      "User from @supabase/supabase-js",
+      "SavedDesigns"
+    ],
+    "functions": [],
+    "hooks": [],
+    "attributes": [
+      "Integration with Supabase for user data",
+      "Likely manages user-specific saved designs"
+    ],
+    "category": "UI Component"
+  },
+  "src/components/common/Cart.tsx": {
+    "type": "JavaScript/React Component",
+    "description": "A React component that likely interacts with Supabase for data fetching or manipulation, utilizing hooks for state and side effect management.",
+    "exports": [],
+    "imports": [
+      "React",
+      "useState",
+      "useEffect",
+      "supabase"
+    ],
+    "functions": [],
+    "hooks": [
+      "useState",
+      "useEffect"
+    ],
+    "attributes": [
+      "Interacts with Supabase",
+      "Manages state and side effects"
+    ],
+    "category": "Frontend"
+  },
+  "src/pages/products.tsx": {
+    "type": "React Component",
+    "description": "A component for displaying product information, potentially with links to individual product pages and images.",
+    "exports": [
+      "default export of the Products component"
+    ],
+    "imports": [
+      "next/image",
+      "react",
+      "Link from an unspecified source"
+    ],
+    "functions": [
+      "Rendering product information, including images and links"
+    ],
+    "hooks": [],
+    "attributes": [
+      "Uses Next.js Image component for optimized image loading"
+    ],
+    "category": "UI Component"
+  },
+  "src/pages/cart.tsx": {
+    "type": "JavaScript/React Component",
+    "description": "A React component that likely interacts with Supabase for data fetching or manipulation.",
+    "exports": [],
+    "imports": [
+      "React",
+      "useState",
+      "useEffect",
+      "supabase from '../utils/supabaseClient'"
+    ],
+    "functions": [],
+    "hooks": [
+      "useState",
+      "useEffect"
+    ],
+    "attributes": [
+      "Interacts with Supabase",
+      "Uses React hooks for state and side effects"
+    ],
+    "category": "Frontend"
+  },
+  "src/components/common/RegisterModal.tsx": {
+    "type": "React Component",
+    "description": "A modal component for user registration, utilizing Supabase for backend services.",
+    "exports": [
+      "RegisterModal"
+    ],
+    "imports": [
+      "React",
+      "useState",
+      "supabase"
+    ],
+    "functions": [
+      "RegisterModal - Handles the registration form and interaction with Supabase for user registration."
+    ],
+    "hooks": [
+      "useState"
+    ],
+    "attributes": [
+      "State management for form inputs",
+      "Integration with Supabase for backend operations"
+    ],
+    "category": "User Interface Component"
+  },
+  "src/extract.py": {
+    "type": "Python script",
+    "description": "A script designed to extract content from TSX files within a specified directory and write it to an output file.",
+    "exports": [],
+    "imports": [
+      "os"
+    ],
+    "functions": [
+      "extract_tsx_content: Function to traverse a directory, find TSX files, extract their content, and write to an output file."
+    ],
+    "hooks": [],
+    "attributes": [
+      "Directory traversal",
+      "File handling",
+      "Content extraction"
+    ],
+    "category": "Data processing"
+  },
+  "src/hooks/useUser.tsx": {
+    "type": "JavaScript/React Component",
+    "description": "A React component that interacts with Supabase for data fetching and state management.",
+    "exports": [],
+    "imports": [
+      "useEffect",
+      "useState",
+      "supabase"
+    ],
+    "functions": [
+      "useEffect for side effects like data fetching",
+      "useState for state management"
+    ],
+    "hooks": [
+      "useEffect",
+      "useState"
+    ],
+    "attributes": [
+      "Interacts with Supabase",
+      "Manages state with hooks"
+    ],
+    "category": "Data Fetching Component"
+  },
+  "src/components/EditProducts/ProductItem.tsx": {
+    "type": "JavaScript/TypeScript",
+    "description": "A React component file that defines a ProductItem component, likely for displaying product information.",
+    "exports": [
+      "ProductItem"
+    ],
+    "imports": [
+      "React",
+      "Product from './types'"
+    ],
+    "functions": [
+      "ProductItem: Renders a product item based on the provided props."
+    ],
+    "hooks": [],
+    "attributes": [
+      "interface ProductItemProps: Defines the props expected by the ProductItem component."
+    ],
+    "category": "UI Component"
+  },
+  "src/pages/employee/dashboard.tsx": {
+    "type": "JavaScript/React Component",
+    "description": "A React component that likely handles image rendering and uses hooks for state and side effects management.",
+    "exports": [],
+    "imports": [
+      "next/image",
+      "react",
+      "useEffect",
+      "useState",
+      "useRout"
+    ],
+    "functions": [],
+    "hooks": [
+      "useEffect",
+      "useState",
+      "useRout"
+    ],
+    "attributes": [
+      "Image handling",
+      "State management",
+      "Side effects management"
+    ],
+    "category": "UI Component"
+  },
+  "src/components/layout/Layout.tsx": {
+    "type": "TypeScript React Component",
+    "description": "A layout component that manages the structure and state for a React application, potentially including navigation and other common UI elements.",
+    "exports": [
+      "Layout"
+    ],
+    "imports": [
+      "React",
+      "ReactNode",
+      "useState",
+      "useRouter"
+    ],
+    "functions": [
+      "Layout: Main function that defines the structure and behavior of the layout component."
+    ],
+    "hooks": [
+      "useState",
+      "useRouter"
+    ],
+    "attributes": [
+      "ReactNode: Used to define the type of children components that can be passed to the Layout component."
+    ],
+    "category": "UI Component"
+  },
+  "src/services/designService.ts": {
+    "type": "JavaScript/TypeScript file",
+    "description": "This file likely contains utility functions or configurations related to interacting with Supabase for database operations and Fabric for canvas manipulation.",
+    "exports": [
+      "s... (incomplete export statement)"
+    ],
+    "imports": [
+      "supabase from '../utils/supabaseClient'",
+      "fabric from 'fabric'"
+    ],
+    "functions": [
+      "(No complete function declarations found within the provided snippet)"
+    ],
+    "hooks": [
+      "(No hooks identified within the provided snippet)"
+    ],
+    "attributes": [
+      "Integration with Supabase for backend services",
+      "Utilization of Fabric library for canvas manipulation"
+    ],
+    "category": "Utility or Configuration"
+  }
+}
